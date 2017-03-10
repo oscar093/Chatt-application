@@ -11,6 +11,7 @@ import java.net.Socket;
 public class ChatServer {
 	ServerSocket serverSocket;
 	public ClientListener threadClientListener;
+	Message msg;
 
 	public ChatServer(int port) {
 		try {
@@ -33,6 +34,7 @@ public class ChatServer {
 			System.out.println("Server igång på port: " + serverSocket.getLocalPort());
 			while (true) {
 				try {
+
 					Socket socket = serverSocket.accept();
 					ClientHandler clientHandler = new ClientHandler(socket);
 					System.out.println(socket.getLocalAddress());
@@ -67,7 +69,11 @@ public class ChatServer {
 					// }
 					// test = (String) ois.readObject();
 					// System.out.println(test);
-					System.out.println(ois.readObject());
+					
+//					System.out.println(ois.readObject());
+//					System.out.println((String)ois.readObject());
+					msg = (Message)ois.readObject();
+					System.out.println(msg.getMsg());
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
