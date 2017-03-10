@@ -1,4 +1,4 @@
-package package1;
+package chatt;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -30,21 +30,23 @@ public class ChatServer {
 	private class ClientListener extends Thread {
 
 		public void run() {
-			System.out.println("Server igång på port: " + serverSocket.getLocalPort());			
-			try {
-				Socket socket = serverSocket.accept();
-				ClientHandler clientHandler = new ClientHandler(socket);
-				System.out.println(socket.getLocalAddress());
-				clientHandler.start();
-			} catch (IOException e) {
-				e.printStackTrace();
+			System.out.println("Server igång på port: " + serverSocket.getLocalPort());
+			while (true) {
+				try {
+					Socket socket = serverSocket.accept();
+					ClientHandler clientHandler = new ClientHandler(socket);
+					System.out.println(socket.getLocalAddress());
+					clientHandler.start();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
 		}
 	}
 
 	private class ClientHandler extends Thread {
 		Socket socket;
-//		Message message;
+		// Message message;
 		String test;
 
 		public ClientHandler(Socket socket) {
@@ -54,27 +56,30 @@ public class ChatServer {
 		public void run() {
 			System.out.println("Client på port: " + socket.getLocalPort());
 			try {
-				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+				// ObjectOutputStream oos = new ObjectOutputStream(new
+				// BufferedOutputStream(socket.getOutputStream()));
 				ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
-//					while (true) { //Här skall det inte vara true, här skall det vara en buffer.isEmpty() till exempel. 
-//						wait();
-//					}
-					test = (String) ois.readObject();
-					System.out.println(test);
+					// while (true) { //Här skall det inte vara true, här skall
+					// det vara en buffer.isEmpty() till exempel.
+					// wait();
+					// }
+					// test = (String) ois.readObject();
+					// System.out.println(test);
+					System.out.println(ois.readObject());
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-//			} catch (InterruptedException e) {
-//				e.printStackTrace();
+				// } catch (InterruptedException e) {
+				// e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-	
-	public static void main (String[] args){
+
+	public static void main(String[] args) {
 		ChatServer cs = new ChatServer(3250);
 		cs.start();
 	}
