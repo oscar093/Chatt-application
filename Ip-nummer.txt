@@ -1,0 +1,9 @@
+* Tänk på att de ssa kan vara olika mellan byggnader och 
+* tillfälliga från gång till gång.
+* Använd ipconfig (Windowws) eller ifconfig (Unix/OSX) för att hitta datorns
+* ipdne här gången.
+
+den 13 mars:
+
+Ley: 10.2.30.124
+Olof: 10.2.26.226
