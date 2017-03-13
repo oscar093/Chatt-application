@@ -8,10 +8,11 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 
+import javax.swing.JOptionPane;
+
 public class ChatServer {
 	ServerSocket serverSocket;
 	public ClientListener threadClientListener;
-	Message msg;
 
 	public ChatServer(int port) {
 		try {
@@ -47,9 +48,9 @@ public class ChatServer {
 	}
 
 	private class ClientHandler extends Thread {
-		Socket socket;
-		// Message message;
-		String test;
+		private Socket socket;
+		private Message msg;
+		private String clientID;
 
 		public ClientHandler(Socket socket) {
 			this.socket = socket;
@@ -58,35 +59,31 @@ public class ChatServer {
 		public void run() {
 			System.out.println("Client på port: " + socket.getLocalPort());
 			try {
-				// ObjectOutputStream oos = new ObjectOutputStream(new
-				// BufferedOutputStream(socket.getOutputStream()));
+				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 				ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
-					// while (true) { //Här skall det inte vara true, här skall
-					// det vara en buffer.isEmpty() till exempel.
-					// wait();
-					// }
-					// test = (String) ois.readObject();
-					// System.out.println(test);
+					Object object = ois.readObject();
 					
-//					System.out.println(ois.readObject());
-//					System.out.println((String)ois.readObject());
-					msg = (Message)ois.readObject();
-					System.out.println(msg.getMsg());
+					if(object instanceof String){
+						clientID = (String)object;
+						System.out.print(clientID + ": ");
+					}
+					if(object instanceof Message){
+						msg = (Message)object;
+						System.out.println(msg.getMsg());
+					}
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
-				// } catch (InterruptedException e) {
-				// e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
 		}
 	}
-
-	public static void main(String[] args) {
-		ChatServer cs = new ChatServer(3250);
-		cs.start();
+	
+	public static void main(String[] args){
+		ChatServer server = new ChatServer(3250);
+		server.start();
 	}
 }

@@ -1,14 +1,13 @@
 package chatt;
 
 import javax.swing.ImageIcon;
-
 import java.io.Serializable;
-
 import javax.swing.*;
 
 public class Message implements Serializable{
 	private ImageIcon picture;
 	private String text;
+	private JFileChooser filechooser;
 
 	public Message() {
 		inputText();
@@ -19,14 +18,15 @@ public class Message implements Serializable{
 		return text;
 	}
 	
-	public void inputText() {
+	public ImageIcon getPicture(){
+		return picture;
+	}
+	
+	private void inputText() {
 		text = JOptionPane.showInputDialog("Skriv meddelande");
 	}
 
-	public void inputPicture() {
-	}
-
-	public static void main(String[] args) {
-		Message msg = new Message();
+	private void inputPicture() {
+		//filechooser?
 	}
 }
