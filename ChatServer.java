@@ -12,7 +12,7 @@ import javax.swing.JOptionPane;
 
 public class ChatServer {
 	ServerSocket serverSocket;
-	public ClientListener threadClientListener;
+	private ClientListener threadClientListener;
 
 	public ChatServer(int port) {
 		try {
@@ -67,11 +67,15 @@ public class ChatServer {
 					
 					if(object instanceof String){
 						clientID = (String)object;
+						
 						System.out.print(clientID + ": ");
 					}
 					if(object instanceof Message){
-						msg = (Message)object;
+						Message msg = (Message)object;
+//						msg.inputMessage(object);
 						System.out.println(msg.getMsg());
+//						System.out.println();
+//						JOptionPane.showMessageDialog(null, msg.getPicture());
 					}
 				}
 			} catch (IOException e) {

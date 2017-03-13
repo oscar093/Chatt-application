@@ -15,7 +15,7 @@ public class ChattClient {
 	private Message msg;
 	private String ID;
 
-	public ChattClient(String ip, int port) {// (String ip, int port){
+	public ChattClient(String ip, int port) {
 		this.ip = ip;
 		this.port = port;
 		ID = JOptionPane.showInputDialog("Ange klient-id: ");
@@ -45,6 +45,7 @@ public class ChattClient {
 	}
 
 	public static void main(String[] args) {
-		ChattClient client = new ChattClient("127.0.0.1", 3250);
+//		ChattClient client = new ChattClient("127.0.0.1", 3250);
+		ChattClient client = new ChattClient("10.2.30.124", 3250);
 	}
 }
