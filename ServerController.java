@@ -123,11 +123,13 @@ public class ServerController {
 					}else if (object instanceof Message) {
 						Message msg = (Message) object;
 //						msg.inputMessage(object);
-						sui.ta_chat.append("<" + clientID + ">: " + msg.getMsg()+ "\n");
+						sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever()+ " > " + msg.getMsg()+ "\n");
 //						JOptionPane.showMessageDialog(null, msg.getPicture());
 						for(ClientHandler ch : threads){
 							if(ch.getClientID().equals(msg.getReciever())){
 								ch.sendMessage(msg);
+							}else{
+								sui.ta_chat.append("Client not available, chack spelling\n");
 							}
 						}
 					}

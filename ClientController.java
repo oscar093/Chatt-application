@@ -84,7 +84,7 @@ public class ClientController {
 				e.printStackTrace();
 			}
 		}else{
-			gui.addToChat("Computer", "Cannot Connect! Press Connect! \n");
+			gui.addToChat("Computer", "Cannot Connect! Press Connect!");
 		}
 	}
 }

@@ -17,8 +17,6 @@ public class Message implements Serializable{
 	private String reciever, sender;
 
 	public Message() {
-//		inputText();
-//		new SelectPicture();
 	}
 	
 	public void setText(String text){
