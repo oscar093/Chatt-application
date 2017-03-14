@@ -3,11 +3,17 @@ package chatt;
 import java.awt.event.ActionEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.logging.FileHandler;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
 
