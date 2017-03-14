@@ -17,10 +17,12 @@ public class ServerController {
 	private Thread server;
 	private int port;
 	private ServerUI sui = new ServerUI(this);
+	private final static Logger LOGGER = Logger.getLogger("ServerLogg");
 
 	public ServerController(int port) {
 		this.port = port;
 		try {
+			createLoggFile();
 			this.serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -37,6 +39,21 @@ public class ServerController {
 		this.server = new Thread();
 		this.serverSocket = new ServerSocket(this.port);
 		this.server.start();
+	}
+	
+	public void createLoggFile() throws IOException {
+		String filename = "logfile_" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
+		File file = new File("./loggs/" + filename);
+		if (!file.getParentFile().exists()) {
+			file.getParentFile().mkdirs();
+		}
+		FileHandler fh = new FileHandler("./loggs/" + filename + ".txt");
+		LOGGER.setUseParentHandlers(false);
+		LOGGER.addHandler(fh);
+		SimpleFormatter formatter = new SimpleFormatter();
+		fh.setFormatter(formatter);
+
+
 	}
 
 	private class ClientListener extends Thread {
