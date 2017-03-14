@@ -27,12 +27,13 @@ public class ServerController {
 		}
 	}
 
-//	public void start() {
-//		if (this.threadClientListener == null) {
-//			this.threadClientListener = new ClientListener();
-//			this.threadClientListener.start();
-//		}
-//	}
+	public void start() {
+		if (this.threadClientListener == null) {
+			this.threadClientListener = new ClientListener();
+			this.threadClientListener.start();
+		}
+	}
+	
 	public void startServer(ActionEvent evt) throws IOException {
 		this.server = new Thread();
 		this.serverSocket = new ServerSocket(this.port);
@@ -42,13 +43,13 @@ public class ServerController {
 	private class ClientListener extends Thread {
 
 		public void run() {
-			System.out.println("Server igång på port: " + serverSocket.getLocalPort());
+			sui.ta_chat.append("Server igång på port: " + serverSocket.getLocalPort());
 			while (true) {
 				try {
 
 					Socket socket = serverSocket.accept();
 					ClientHandler clientHandler = new ClientHandler(socket);
-					System.out.println(socket.getLocalAddress());
+					sui.ta_chat.append(socket.getLocalAddress()+"");
 					clientHandler.start();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -67,7 +68,7 @@ public class ServerController {
 		}
 
 		public void run() {
-			System.out.println("Client på port: " + socket.getLocalPort());
+			sui.ta_chat.append("Client på port: " + socket.getLocalPort());
 			try {
 				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
 				ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
@@ -78,12 +79,12 @@ public class ServerController {
 					if (object instanceof String) {
 						clientID = (String) object;
 
-						System.out.print(clientID + ": ");
+						sui.ta_chat.append(clientID + ": ");
 					}
 					if (object instanceof Message) {
 						Message msg = (Message) object;
 //						msg.inputMessage(object);
-						System.out.println(msg.getMsg());
+						sui.ta_chat.append(msg.getMsg());
 //						JOptionPane.showMessageDialog(null, msg.getPicture());
 					}
 				}
