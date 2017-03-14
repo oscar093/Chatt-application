@@ -14,6 +14,7 @@ import javax.swing.*;
 public class Message implements Serializable{
 	private ImageIcon picture;
 	private String text;
+	private String reciever, sender;
 
 	public Message() {
 //		inputText();
@@ -64,6 +65,21 @@ public class Message implements Serializable{
 		}
 	}
 	
+	public void setReciver(String reciever){
+		this.reciever = reciever;
+	}
+	
+	public String getReciever(){
+		return this.reciever;
+	}
+	
+	public void setSender(String sender){
+		this.sender = sender;
+	}
+	
+	public String getSender(){
+		return this.sender;
+	}
 	public static void main(String[] args){
 		Message msg = new Message();
 	}

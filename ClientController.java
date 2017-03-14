@@ -28,6 +28,7 @@ public class ClientController {
 		this.ip = ip;
 		this.port = port;
 		username = JOptionPane.showInputDialog("Skriv in användarnamn");
+		gui.setClientName(username);
 		gui.setController(this);
 		gui.setUsername(username);
 		gui.display();
@@ -37,8 +38,10 @@ public class ClientController {
         if(isConnected == false) {
             try {
                 socket = new Socket(ip, port);
+                gui.addToChat("Computer", "Client port: " + socket.getLocalPort());
                 oos = new ObjectOutputStream(socket.getOutputStream());
-//                ois = new ObjectInputStream(socket.getInputStream()); //Vet inte varför men den hänger sig om man använder denna... 
+                oos.flush();
+                ois = new ObjectInputStream(socket.getInputStream()); //Vet inte varför men den hänger sig om man använder denna... 
                 isConnected = true;
                 oos.writeObject(new Connect(username));
                 oos.flush();
@@ -56,7 +59,9 @@ public class ClientController {
 		public void run() {
 			try {
 				while(true) {
-					
+					Object obj = ois.readObject();
+					Message msg = (Message)obj;
+					gui.addToChat(msg.getSender(), msg.getMsg());
 				}
 			} catch(Exception e) {}
 			try {
@@ -69,6 +74,9 @@ public class ClientController {
 		if(isConnected == true){
 			try {
 				Message message = new Message();
+				String reciever = JOptionPane.showInputDialog("Skriv in mottagare");
+				message.setReciver(reciever);
+				message.setSender(username);
 				message.setText(gui.getMessageBox());
 				this.oos.writeObject(message);
 				this.oos.flush();

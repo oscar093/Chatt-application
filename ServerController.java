@@ -26,8 +26,8 @@ public class ServerController {
 	private int port;
 	private ServerUI sui = new ServerUI(this);
 	private final static Logger LOGGER = Logger.getLogger("ServerLogg");
-	private ArrayList<Connect> users = new ArrayList<Connect>(); //Alla användare sparas här.
-	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>();
+	private ArrayList<Connect> users = new ArrayList<Connect>(); //Alla användare skall sparas. 
+	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); //Alla aktiva trådar. 
 
 	public ServerController(int port) {
 		this.port = port;
@@ -97,9 +97,9 @@ public class ServerController {
 		}
 
 		public void run() {
-			sui.ta_chat.append("Client på port: " + socket.getLocalPort() + "\n");
 			try {
 				oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+				oos.flush();
 				ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
@@ -125,6 +125,11 @@ public class ServerController {
 //						msg.inputMessage(object);
 						sui.ta_chat.append("<" + clientID + ">: " + msg.getMsg()+ "\n");
 //						JOptionPane.showMessageDialog(null, msg.getPicture());
+						for(ClientHandler ch : threads){
+							if(ch.getClientID().equals(msg.getReciever())){
+								ch.sendMessage(msg);
+							}
+						}
 					}
 				}
 			} catch (IOException e) {
@@ -141,6 +146,15 @@ public class ServerController {
 		public void sendMessage(String message){
 			try {
 				oos.writeObject(message);
+				oos.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
+		public void sendMessage(Message msg){
+			try {
+				oos.writeObject(msg);
 				oos.flush();
 			} catch (IOException e) {
 				e.printStackTrace();

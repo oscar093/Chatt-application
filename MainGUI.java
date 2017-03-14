@@ -160,8 +160,7 @@ public class MainGUI {
     }
     
     public void addToChat(String message){
-    	chatBox.append("<" + username + ">:  " + messageBox.getText()
-        + "\n");
+    	chatBox.append("<" + username + ">:  " + message + "\n");
     	messageBox.setText("");
     }
     
@@ -175,5 +174,9 @@ public class MainGUI {
     
     public String getMessageBox(){
     	return messageBox.getText();
+    }
+    
+    public void setClientName(String name){
+    	this.newFrame.setTitle(name);
     }
 }
