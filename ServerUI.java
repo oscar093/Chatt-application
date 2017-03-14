@@ -42,9 +42,8 @@ public class ServerUI extends JFrame {
 		b_start.setText("START");
 		b_start.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				 try {
-					sc.startServer(evt);
-				} catch (IOException e) {}
+				sc.start();
+				
 //				sc.start();
 				ta_chat.append("Server started\n");
 			}

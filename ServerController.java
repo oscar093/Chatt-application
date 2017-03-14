@@ -10,7 +10,9 @@ import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
@@ -24,6 +26,8 @@ public class ServerController {
 	private int port;
 	private ServerUI sui = new ServerUI(this);
 	private final static Logger LOGGER = Logger.getLogger("ServerLogg");
+	private ArrayList<Connect> users = new ArrayList<Connect>(); //Alla användare sparas här.
+	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>();
 
 	public ServerController(int port) {
 		this.port = port;
@@ -66,13 +70,13 @@ public class ServerController {
 	private class ClientListener extends Thread {
 
 		public void run() {
-			sui.ta_chat.append("Server igång på port: " + serverSocket.getLocalPort());
+			sui.ta_chat.append("Server igång på port: " + serverSocket.getLocalPort() + "\n");
 			while (true) {
 				try {
 
 					Socket socket = serverSocket.accept();
 					ClientHandler clientHandler = new ClientHandler(socket);
-					sui.ta_chat.append(socket.getLocalAddress()+"");
+					threads.add(clientHandler);
 					clientHandler.start();
 				} catch (IOException e) {
 					e.printStackTrace();
@@ -85,29 +89,41 @@ public class ServerController {
 		private Socket socket;
 		private Message msg;
 		private String clientID;
+		private ObjectOutputStream oos;
+		private ObjectInputStream ois;
 
 		public ClientHandler(Socket socket) {
 			this.socket = socket;
 		}
 
 		public void run() {
-			sui.ta_chat.append("Client på port: " + socket.getLocalPort());
+			sui.ta_chat.append("Client på port: " + socket.getLocalPort() + "\n");
 			try {
-				ObjectOutputStream oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
-				ObjectInputStream ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
+				oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
+				ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
 					Object object = ois.readObject();
-
-					if (object instanceof String) {
+					
+					if(object instanceof Connect) {
+						String username;
+						username = ((Connect) object).getUsername();
+						this.clientID = username;
+						users.add((Connect)object);
+						sui.ta_chat.append(username + " is now connected\n");
+					}else if (object instanceof String) {
 						clientID = (String) object;
-
-						sui.ta_chat.append(clientID + ": ");
-					}
-					if (object instanceof Message) {
+						for (Connect usrs : users) {
+							if (!clientID.equals(usrs.getUsername())) {
+								Connect connect = new Connect(clientID);
+								users.add(connect);
+							}
+						}
+						
+					}else if (object instanceof Message) {
 						Message msg = (Message) object;
 //						msg.inputMessage(object);
-						sui.ta_chat.append(msg.getMsg());
+						sui.ta_chat.append("<" + clientID + ">: " + msg.getMsg()+ "\n");
 //						JOptionPane.showMessageDialog(null, msg.getPicture());
 					}
 				}
@@ -117,6 +133,20 @@ public class ServerController {
 				e.printStackTrace();
 			}
 		}
+		
+		public String getClientID(){
+			return this.clientID;
+		}
+		
+		public void sendMessage(String message){
+			try {
+				oos.writeObject(message);
+				oos.flush();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
+		
 	}
 
 //	public static void main(String[] args) {

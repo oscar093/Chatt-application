@@ -16,12 +16,16 @@ public class Message implements Serializable{
 	private String text;
 
 	public Message() {
-		inputText();
-		new SelectPicture();
+//		inputText();
+//		new SelectPicture();
+	}
+	
+	public void setText(String text){
+		this.text = text;
 	}
 
 	public String getMsg(){
-		return text;
+		return this.text;
 	}
 	
 	public ImageIcon getPicture(){

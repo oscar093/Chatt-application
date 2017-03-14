@@ -1,4 +1,4 @@
-package ColtGUI;
+package chatt;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,6 +15,9 @@ public class MainGUI {
     private JTextArea chatBox;
     private JTextField usernameChooser;
     private JFrame preFrame;
+    private JButton connect;
+    
+    private ClientController cc;
 
     public static void main(String[] args) {
         SwingUtilities.invokeLater(new Runnable() {
@@ -60,6 +63,8 @@ public class MainGUI {
         preFrame.setVisible(true);
 
     }
+    
+    
 
     public void display() {
         JPanel mainPanel = new JPanel();
@@ -74,6 +79,16 @@ public class MainGUI {
 
         sendMessage = new JButton("Send Message");
         sendMessage.addActionListener((ActionListener) new sendMessageButtonListener());
+        
+        connect = new JButton("Connect");
+        connect.addActionListener(new ActionListener(){
+
+			public void actionPerformed(ActionEvent e) {
+				cc.connect(e);
+				
+			}
+        	
+        });
 
         chatBox = new JTextArea();
         chatBox.setEditable(false);
@@ -97,6 +112,8 @@ public class MainGUI {
 
         southPanel.add(messageBox, left);
         southPanel.add(sendMessage, right);
+        southPanel.add(connect);
+       
 
         mainPanel.add(BorderLayout.SOUTH, southPanel);
 
@@ -116,6 +133,7 @@ public class MainGUI {
             } else {
                 chatBox.append("<" + username + ">:  " + messageBox.getText()
                         + "\n");
+                cc.sendChatMessage();
                 messageBox.setText("");
             }
             messageBox.requestFocusInWindow();
@@ -134,8 +152,28 @@ public class MainGUI {
                 display();
             }
         }
-
-		
-
+    }
+    
+    public void addToChat(String username, String message){
+    	chatBox.append("<" + username + ">:  " + message + "\n");
+    	messageBox.setText("");
+    }
+    
+    public void addToChat(String message){
+    	chatBox.append("<" + username + ">:  " + messageBox.getText()
+        + "\n");
+    	messageBox.setText("");
+    }
+    
+    public void setUsername(String username){
+    	this.username = username;
+    }
+    
+    public void setController(ClientController cc){
+    	this.cc = cc;
+    }
+    
+    public String getMessageBox(){
+    	return messageBox.getText();
     }
 }
