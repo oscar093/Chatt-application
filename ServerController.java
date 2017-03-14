@@ -128,8 +128,6 @@ public class ServerController {
 						for(ClientHandler ch : threads){
 							if(ch.getClientID().equals(msg.getReciever())){
 								ch.sendMessage(msg);
-							}else{
-								sui.ta_chat.append("Client not available, chack spelling\n");
 							}
 						}
 					}
