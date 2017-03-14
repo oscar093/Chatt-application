@@ -8,7 +8,6 @@ import javax.swing.*;
 
 public class MainGUI {
     private String appName = "ChattClient";
-    private MainGUI mainGUI;
     private JFrame newFrame = new JFrame(appName);
     private JButton sendMessage;
     private JTextField messageBox;

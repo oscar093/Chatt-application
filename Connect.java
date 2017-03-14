@@ -7,7 +7,7 @@ import java.util.LinkedList;
 public class Connect implements Serializable {
 	private static final long serialVersionUID = 1138894280945178915L;
 	private String username;
-	private LinkedList<String> waitingMessage = new LinkedList<String>();
+	private LinkedList<Message> waitingMessage = new LinkedList<Message>();
 	
 	public Connect(String username) {
 		this.username = username;
@@ -21,15 +21,15 @@ public class Connect implements Serializable {
 		this.username = id;
 	}
 	
-	public void addMessage(String message){
+	public void addMessage(Message message){
 		waitingMessage.addLast(message);
 	}
 	
-	public String getMessage(){
+	public Message getMessage(){
 		if(!waitingMessage.isEmpty()){
 			return waitingMessage.removeFirst();
 		}else{
-			return null;
+			return null;	
 		}
 		
 	}

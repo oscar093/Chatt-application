@@ -103,6 +103,7 @@ public class ServerController {
 				ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
+					waitingForClient(); //Måste kolla igenom denna metoden.. 
 					Object object = ois.readObject();
 					
 					if(object instanceof Connect) {
@@ -125,9 +126,18 @@ public class ServerController {
 //						msg.inputMessage(object);
 						sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever()+ " > " + msg.getMsg()+ "\n");
 //						JOptionPane.showMessageDialog(null, msg.getPicture());
+						boolean threadIsActive = false;
 						for(ClientHandler ch : threads){
 							if(ch.getClientID().equals(msg.getReciever())){
 								ch.sendMessage(msg);
+								threadIsActive = true;
+							}
+						}
+						if(!threadIsActive){
+							for(Connect c : users){
+								if(c.getUsername().equals(msg.getReciever())){
+									c.addMessage(msg);
+								}
 							}
 						}
 					}
@@ -160,6 +170,26 @@ public class ServerController {
 				e.printStackTrace();
 			}
 		}
+		
+		public void waitingForClient(){
+			for(Connect c : users){
+				while(!c.isEmpty()){
+					Message msg = c.getMessage();
+					for (ClientHandler ch : threads){
+						if(msg.getReciever().equals(ch.getClientID()));
+						try {
+							ch.oos.writeObject(msg);
+							ch.oos.flush();
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+						
+					}
+					
+				}
+			}
+		}
+		
 		
 	}
 

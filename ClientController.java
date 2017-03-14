@@ -41,7 +41,7 @@ public class ClientController {
                 gui.addToChat("Computer", "Client port: " + socket.getLocalPort());
                 oos = new ObjectOutputStream(socket.getOutputStream());
                 oos.flush();
-                ois = new ObjectInputStream(socket.getInputStream()); //Vet inte varför men den hänger sig om man använder denna... 
+                ois = new ObjectInputStream(socket.getInputStream());
                 isConnected = true;
                 oos.writeObject(new Connect(username));
                 oos.flush();
