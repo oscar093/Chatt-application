@@ -7,6 +7,7 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -14,9 +15,11 @@ import javax.swing.*;
 public class Message implements Serializable{
 	private ImageIcon picture;
 	private String text;
-	private String reciever, sender;
+	private String recievers, sender;
+	
 
 	public Message() {
+		
 	}
 	
 	public void setText(String text){
@@ -61,12 +64,15 @@ public class Message implements Serializable{
 		}
 	}
 	
-	public void setReciver(String reciever){
-		this.reciever = reciever;
+	public void setReciver(String recievers){
+		this.recievers = recievers;
+		
+		
 	}
 	
-	public String getReciever(){
-		return this.reciever;
+	public String[] getReciever(){
+		String[] reciever = ((String) recievers).split(" ");
+		return reciever;
 	}
 	
 	public void setSender(String sender){

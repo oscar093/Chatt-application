@@ -149,18 +149,33 @@ public class ServerController {
 								}
 							}
 						} else {
-							sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever() + " > " + msg.getMsg() + "\n");
+//							sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever() + " > " + msg.getMsg() + "\n");
 							log.logMessage(msg, msg.getSender());
 							boolean threadIsActive = false;
-							for (ClientHandler ch : threads) {
-								if (ch.getClientID().equals(msg.getReciever())) {
+//							for (ClientHandler ch : threads) {
+//								if (ch.getClientID().equals(msg.getReciever())) {
+//									ch.sendMessage(msg);
+//									threadIsActive = true;
+//								}
+//							}
+////							if (!threadIsActive) {
+////								waitingMessages.addLast(msg);
+//							}
+							String[] recievers = (String[])msg.getReciever();
+							for(int i = 0; i < recievers.length; i++){
+							for (ClientHandler ch : threads) {								
+								if (ch.getClientID().equals(recievers[i])) {
 									ch.sendMessage(msg);
-									threadIsActive = true;
+									sui.ta_chat.append("< " + clientID + " --> " + recievers[i] + " > " + msg.getMsg() + "\n");
+									
+								}else{
+									Message message = msg;
+									message.setReciver(ch.getClientID());
+									waitingMessages.addLast(message);
+								}
 								}
 							}
-							if (!threadIsActive) {
-								waitingMessages.addLast(msg);
-							}
+							
 						}
 					}
 
