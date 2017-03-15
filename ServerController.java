@@ -170,7 +170,9 @@ public class ServerController {
 				e.printStackTrace();
 			}
 		}
-		
+		/*
+		 * Denna är till för att skicka meddelanden som ligger buffrade i connected klassen. 
+		 */
 		public void waitingForClient(){
 			for(Connect c : users){
 				while(!c.isEmpty()){
@@ -192,9 +194,4 @@ public class ServerController {
 		
 		
 	}
-
-//	public static void main(String[] args) {
-//		ServerController server = new ServerController(3250);
-//		server.start();
-//	}
 }
