@@ -88,10 +88,8 @@ public class MainGUI {
         connect.addActionListener(new ActionListener(){
 
 			public void actionPerformed(ActionEvent e) {
-				cc.connect(e);
-				
+				cc.connect(e);	
 			}
-        	
         });
         
         disConnect = new JButton("Disconnect");
@@ -100,9 +98,7 @@ public class MainGUI {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				cc.disconnect();
-				
 			}
-        	
         });
 
         chatBox = new JTextArea();

@@ -91,16 +91,27 @@ public class ServerController {
 				ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
-					waitingForClient(); // Denna metoden är inte färdig!
+					
 					Object object = ois.readObject();
 
 					if (object instanceof Connect) {
 						String username;
 						username = ((Connect) object).getUsername();
 						this.clientID = username;
-						users.add((Connect) object);
+						boolean alreadyAUser = false;
+						for (Connect usrs : users) {
+							if (clientID.equals(usrs.getUsername())) {
+								alreadyAUser = true;
+							}
+						}
+						if(!alreadyAUser){ //Av någon anledning går den in i denna loopen trots att användaren readan finns..?
+							Connect con = (Connect)object;
+							users.add(con);
+							System.out.println(con.getUsername());
+						}
 						sui.ta_chat.append(username + " has joined the chat\n");
 						log.logServerMessage(username + " has connected");
+						msgWaitingForClient(); // Denna metoden är inte färdig!
 
 					} else if (object instanceof String) {
 						clientID = (String) object;
@@ -115,10 +126,14 @@ public class ServerController {
 						Message msg = (Message) object;
 						if (msg.getReciever().equals("disconnect")) {
 							sui.ta_chat.append(clientID + " has left the chat\n");
-							log.logServerMessage(clientID + " is diconnected");
+							log.logServerMessage(clientID + " is disconnected");
+							for (ClientHandler ch : threads){
+								if(ch.equals(this)){
+									threads.remove(ch);
+								}
+							}
 						} else {
-							sui.ta_chat.append(
-									"< " + clientID + " --> " + msg.getReciever() + " > " + msg.getMsg() + "\n");
+							sui.ta_chat.append(	"< " + clientID + " --> " + msg.getReciever() + " > " + msg.getMsg() + "\n");
 							log.logMessage(msg, msg.getSender());
 							boolean threadIsActive = false;
 							for (ClientHandler ch : threads) {
@@ -169,19 +184,14 @@ public class ServerController {
 		/*
 		 * Denna är till för att skicka meddelanden som ligger buffrade i connected klassen. 
 		 */
-		public void waitingForClient(){
+		public void msgWaitingForClient(){
 			for(Connect c : users){
 				while(!c.isEmpty()){
 					Message msg = c.getMessage();
+					System.out.print(msg.getReciever());
 					for (ClientHandler ch : threads){
 						if(msg.getReciever().equals(ch.getClientID()));
-						try {
-							ch.oos.writeObject(msg);
-							ch.oos.flush();
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
-						
+						sendMessage(msg);						
 					}
 					
 				}
