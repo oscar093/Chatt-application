@@ -27,7 +27,7 @@ public class ServerController {
 	private ServerUI sui = new ServerUI(this);
 	private ArrayList<Connect> users = new ArrayList<Connect>(); //Alla användare skall sparas. 
 	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); //Alla aktiva trådar. 
-	private LinkedList<Message> waitingMessages = new LinkedList<Message>();
+	private LinkedList<Message> waitingMessages = new LinkedList<Message>();//Lagrar meddelanden som inte kommit fram
 	private LogHandler log;
 	
 	public ServerController(int port) throws SecurityException, IOException {
@@ -144,11 +144,7 @@ public class ServerController {
 								}
 							}
 							if (!threadIsActive) {
-								for (Connect c : users) {
-									if (c.getUsername().equals(clientID)) {
-										c.addMessage(msg);
-									}
-								}
+								waitingMessages.addLast(msg);
 							}
 						}
 					}
@@ -185,20 +181,14 @@ public class ServerController {
 		/*
 		 * Denna är till för att skicka meddelanden som ligger buffrade i connected klassen. 
 		 */
-		public void msgWaitingForClient(){
-			for(Connect c : users){
-				while(!c.isEmpty()){
-					Message msg = c.getMessage();
-					System.out.print(msg.getReciever());
-					for (ClientHandler ch : threads){
-						if(msg.getReciever().equals(ch.getClientID()));
-						sendMessage(msg);					
+		public void msgWaitingForClient(){	
+			while (!waitingMessages.isEmpty()) {
+				for (ClientHandler ch : threads) {
+					if (waitingMessages.getFirst().getReciever().equals(ch.getClientID())) {
+						sendMessage(waitingMessages.removeFirst());
 					}
-					
 				}
 			}
 		}
-		
-		
 	}
 }
