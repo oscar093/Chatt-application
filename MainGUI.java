@@ -139,9 +139,7 @@ public class MainGUI {
 
     class sendMessageButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            if (messageBox.getText().length() < 1) {
-                // do nothing
-            } else if (messageBox.getText().equals(".clear")) {
+            if (messageBox.getText().equals(".clear")) {
                 chatBox.setText("Cleared all messages\n");
                 messageBox.setText("");
             } else {
