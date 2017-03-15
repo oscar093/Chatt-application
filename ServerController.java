@@ -107,12 +107,9 @@ public class ServerController {
 								alreadyAUser = true;
 							}
 						}
-						if (!alreadyAUser) { // Av någon anledning går den in i
-												// denna loopen trots att
-												// användaren readan finns..?
+						if (!alreadyAUser) {
 							Connect con = (Connect) object;
 							users.add(con);
-							System.out.println(con.getUsername());
 						}
 						sui.ta_chat.append(username + " has joined the chat\n");
 						log.logServerMessage(username + " has connected");
@@ -149,29 +146,27 @@ public class ServerController {
 								}
 							}
 						} else {
-//							sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever() + " > " + msg.getMsg() + "\n");
 							log.logMessage(msg, msg.getSender());
-							boolean threadIsActive = false;
-//							for (ClientHandler ch : threads) {
-//								if (ch.getClientID().equals(msg.getReciever())) {
-//									ch.sendMessage(msg);
-//									threadIsActive = true;
-//								}
-//							}
-////							if (!threadIsActive) {
-////								waitingMessages.addLast(msg);
-//							}
+							boolean threadIsActive = true;
 							String[] recievers = (String[])msg.getReciever();
 							for(int i = 0; i < recievers.length; i++){
 							for (ClientHandler ch : threads) {								
 								if (ch.getClientID().equals(recievers[i])) {
 									ch.sendMessage(msg);
-									sui.ta_chat.append("< " + clientID + " --> " + recievers[i] + " > " + msg.getMsg() + "\n");
-									
-								}else{
+									if(threadIsActive){
+										String sentTo = "";
+										for(int j = 0; j < recievers.length; j++){
+											sentTo += recievers[j] + ", ";
+										}
+										sui.ta_chat.append("< " + clientID + " --> " + sentTo + " > " + msg.getMsg() + "\n");
+										threadIsActive = false;
+									}	
+								}
+								if(!threadIsActive){ //Den skall inte in här om meddelandet skickats iväg, men den gör det iaf. Detta skall fixa. 
 									Message message = msg;
 									message.setReciver(ch.getClientID());
 									waitingMessages.addLast(message);
+									sui.ta_chat.append("< " + clientID + " !--> " + recievers[i] + " > Message: \" " + msg.getMsg() + "\"will be sent when"+ recievers[i]+ " is online\n");
 								}
 								}
 							}
@@ -218,7 +213,9 @@ public class ServerController {
 			while (!waitingMessages.isEmpty()) {
 				for (ClientHandler ch : threads) {
 					if (waitingMessages.getFirst().getReciever().equals(ch.getClientID())) {
+						sui.ta_chat.append("< A waiting message from: " + waitingMessages.getFirst().getSender() + " is now sent to " + ch.getClientID() + " > " + msg.getMsg() + "\n");
 						sendMessage(waitingMessages.removeFirst());
+						
 					}
 
 				}
