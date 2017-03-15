@@ -16,6 +16,7 @@ import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+
 import javax.swing.JOptionPane;
 
 public class ServerController {
@@ -24,14 +25,15 @@ public class ServerController {
 	private Thread server;
 	private int port;
 	private ServerUI sui = new ServerUI(this);
-	private final static Logger LOGGER = Logger.getLogger("ServerLogg");
-	private ArrayList<Connect> users = new ArrayList<Connect>(); //Alla användare skall sparas. 
-	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); //Alla aktiva trådar. 
+	private ArrayList<Connect> users = new ArrayList<Connect>(); // Alla användare ska sparas
+	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); // Alla aktiva trådar
 
-	public ServerController(int port) {
+	private LogHandler log;
+	
+	public ServerController(int port) throws SecurityException, IOException {
 		this.port = port;
+		log = new LogHandler();
 		try {
-			//createLoggFile();
 			this.serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -44,32 +46,19 @@ public class ServerController {
 			this.threadClientListener.start();
 		}
 	}
-	
+
 	public void startServer(ActionEvent evt) throws IOException {
 		this.server = new Thread();
 		this.serverSocket = new ServerSocket(this.port);
 		this.server.start();
-	}
-	
-	public void createLoggFile() throws IOException {
-		String filename = "logfile_" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-		File file = new File("./loggs/" + filename);
-		if (!file.getParentFile().exists()) {
-			file.getParentFile().mkdirs();
-		}
-		FileHandler fh = new FileHandler("./loggs/" + filename + ".txt");
-		LOGGER.setUseParentHandlers(false);
-		LOGGER.addHandler(fh);
-		SimpleFormatter formatter = new SimpleFormatter();
-		fh.setFormatter(formatter);
-
-
 	}
 
 	private class ClientListener extends Thread {
 
 		public void run() {
 			sui.ta_chat.append("Server igång på port: " + serverSocket.getLocalPort() + "\n");
+			log.logServerMessage("Server started");
+
 			while (true) {
 				try {
 
@@ -90,6 +79,7 @@ public class ServerController {
 		private String clientID;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
+		String onlineStr = "";
 
 		public ClientHandler(Socket socket) {
 			this.socket = socket;
@@ -102,15 +92,42 @@ public class ServerController {
 				ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
+
 					Object object = ois.readObject();
-					
-					if(object instanceof Connect) {
+
+					if (object instanceof Connect) {
 						String username;
 						username = ((Connect) object).getUsername();
 						this.clientID = username;
-						users.add((Connect)object);
-						sui.ta_chat.append(username + " is now connected\n");
-					}else if (object instanceof String) {
+						boolean alreadyAUser = false;
+						for (Connect usrs : users) {
+							if (clientID.equals(usrs.getUsername())) {
+								alreadyAUser = true;
+							}
+						}
+						if (!alreadyAUser) { // Av någon anledning går den in i
+												// denna loopen trots att
+												// användaren readan finns..?
+							Connect con = (Connect) object;
+							users.add(con);
+							System.out.println(con.getUsername());
+						}
+						sui.ta_chat.append(username + " has joined the chat\n");
+						log.logServerMessage(username + " has connected");
+						msgWaitingForClient(); // Denna metoden är inte färdig!
+
+						Message msgToClient = new Message();
+						msgToClient.setSender("Server");
+						for (ClientHandler ch : threads) {
+							onlineStr += ch.getClientID() + " ";
+						}
+						msgToClient.setText(onlineStr + "är online");
+
+						for (ClientHandler ch : threads) {
+							ch.sendMessage(msgToClient);
+						}
+
+					} else if (object instanceof String) {
 						clientID = (String) object;
 						for (Connect usrs : users) {
 							if (!clientID.equals(usrs.getUsername())) {
@@ -118,17 +135,37 @@ public class ServerController {
 								users.add(connect);
 							}
 						}
-						
-					}else if (object instanceof Message) {
+
+					} else if (object instanceof Message) {
 						Message msg = (Message) object;
-//						msg.inputMessage(object);
-						sui.ta_chat.append("<" + clientID + "> till < " + msg.getReciever() + ">: " + msg.getMsg()+ "\n");
-						for(ClientHandler ch : threads){
-							if(ch.getClientID().equals(msg.getReciever())){
-								ch.sendMessage(msg);
+						if (msg.getReciever().equals("disconnect")) {
+							sui.ta_chat.append(clientID + " has left the chat\n");
+							log.logServerMessage(clientID + " is disconnected");
+							for (ClientHandler ch : threads) {
+								if (ch.equals(this)) {
+									threads.remove(ch);
+								}
+							}
+						} else {
+							sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever() + " > " + msg.getMsg() + "\n");
+							log.logMessage(msg, msg.getSender());
+							boolean threadIsActive = false;
+							for (ClientHandler ch : threads) {
+								if (ch.getClientID().equals(msg.getReciever())) {
+									ch.sendMessage(msg);
+									threadIsActive = true;
+								}
+							}
+							if (!threadIsActive) {
+								for (Connect c : users) {
+									if (c.getUsername().equals(msg.getReciever())) {
+										c.addMessage(msg);
+									}
+								}
 							}
 						}
 					}
+
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -136,12 +173,12 @@ public class ServerController {
 				e.printStackTrace();
 			}
 		}
-		
-		public String getClientID(){
+
+		public String getClientID() {
 			return this.clientID;
 		}
-		
-		public void sendMessage(String message){
+
+		public void sendMessage(String message) {
 			try {
 				oos.writeObject(message);
 				oos.flush();
@@ -149,8 +186,8 @@ public class ServerController {
 				e.printStackTrace();
 			}
 		}
-		
-		public void sendMessage(Message msg){
+
+		public void sendMessage(Message msg) {
 			try {
 				oos.writeObject(msg);
 				oos.flush();
@@ -158,6 +195,24 @@ public class ServerController {
 				e.printStackTrace();
 			}
 		}
-		
+
+		/*
+		 * Denna är till för att skicka meddelanden som ligger buffrade i
+		 * connected klassen.
+		 */
+		public void msgWaitingForClient() {
+			for (Connect c : users) {
+				while (!c.isEmpty()) {
+					Message msg = c.getMessage();
+					System.out.print(msg.getReciever());
+					for (ClientHandler ch : threads) {
+						if (msg.getReciever().equals(ch.getClientID()))
+							;
+						sendMessage(msg);
+					}
+
+				}
+			}
+		}
 	}
 }

@@ -2,10 +2,12 @@ package chatt;
 
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileNameExtensionFilter;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -15,8 +17,6 @@ public class Message implements Serializable{
 	private String reciever, sender;
 
 	public Message() {
-//		inputText();
-//		new SelectPicture();
 	}
 	
 	public void setText(String text){
@@ -48,14 +48,15 @@ public class Message implements Serializable{
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("jpg", "png", "gif");
 			JFileChooser filechooser = new JFileChooser();
 			filechooser.setFileFilter(filter);
-			int returnVal = filechooser.showOpenDialog(null);
+			int returnVal = filechooser.showOpenDialog(null); //<<
 			if(returnVal == JFileChooser.APPROVE_OPTION){
 				File file = filechooser.getSelectedFile();
 				BufferedImage bi;
 				try{
 					bi = ImageIO.read(file);
 					picture = new ImageIcon(bi);
-				}catch(IOException e){}	
+				}catch(IOException e){}
+				
 			}
 		}
 	}

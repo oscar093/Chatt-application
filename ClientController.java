@@ -41,17 +41,7 @@ public class ClientController {
 				gui.addToChat("Computer", "Client port: " + socket.getLocalPort());
 				oos = new ObjectOutputStream(socket.getOutputStream());
 				oos.flush();
-				ois = new ObjectInputStream(socket.getInputStream()); // Vet
-																		// inte
-																		// varför
-																		// men
-																		// den
-																		// hänger
-																		// sig
-																		// om
-																		// man
-																		// använder
-																		// denna...
+				ois = new ObjectInputStream(socket.getInputStream());
 				isConnected = true;
 				oos.writeObject(new Connect(username));
 				oos.flush();
@@ -64,15 +54,38 @@ public class ClientController {
 		}
 	}
 
+	public void disconnect() {
+		if (isConnected) {
+			try {
+
+				isConnected = false;
+				gui.addToChat("Computer", "You are now diconnected.");
+				Message msg = new Message();
+				msg.setSender(username);
+				msg.setReciver("disconnect");
+				oos.writeObject(msg);
+				oos.flush();
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		} else {
+			gui.addToChat("Computer", "You are not even connected, connect first if you want to disconnect! ");
+		}
+
+	}
+
 	private class Listener extends Thread {
 		public void run() {
 			try {
 				while (true) {
 					Object obj = ois.readObject();
 					Message msg = (Message) obj;
-					
 					gui.addToChat(msg.getSender(), msg.getMsg());
-					gui.addToChat(msg.getPicture());
+					if (msg.getPicture() != null) {
+						JOptionPane.showMessageDialog(null, "Bild skickad från " + msg.getSender());
+						JOptionPane.showMessageDialog(null, msg.getPicture());
+					}
 				}
 			} catch (Exception e) {
 			}
@@ -98,7 +111,7 @@ public class ClientController {
 				e.printStackTrace();
 			}
 		} else {
-			gui.addToChat("Computer", "Cannot Connect! Press Connect! \n");
+			gui.addToChat("Computer", "Cannot Connect! Press Connect!");
 		}
 	}
 }
