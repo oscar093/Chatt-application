@@ -176,7 +176,8 @@ public class ServerController {
 
 				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				log.logServerMessage(clientID + " has disconnected");
+			//	e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
