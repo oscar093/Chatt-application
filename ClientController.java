@@ -80,11 +80,19 @@ public class ClientController {
 			try {
 				while (true) {
 					Object obj = ois.readObject();
-					Message msg = (Message) obj;
-					gui.addToChat(msg.getSender(), msg.getMsg());
-					if (msg.getPicture() != null) {
-						JOptionPane.showMessageDialog(null, "Bild skickad från " + msg.getSender());
-						JOptionPane.showMessageDialog(null, msg.getPicture());
+					if (obj instanceof Message) {
+						Message msg = (Message) obj;
+						gui.addToChat(msg.getSender(), msg.getMsg());
+						if (msg.getPicture() != null) {
+							JOptionPane.showMessageDialog(null, "Bild skickad från " + msg.getSender());
+							JOptionPane.showMessageDialog(null, msg.getPicture());
+						}
+					}
+					if (obj instanceof String[]) {
+						String[] onlineUsers = (String[])obj;
+						for(int i = 0; i < onlineUsers.length; i++){
+							JOptionPane.showMessageDialog(null, onlineUsers[i]); //ska vara typ gui.setText(onlineUsers[i]);
+						}
 					}
 				}
 			} catch (Exception e) {

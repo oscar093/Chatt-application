@@ -25,7 +25,6 @@ public class ServerController {
 	private Thread server;
 	private int port;
 	private ServerUI sui = new ServerUI(this);
-
 	private ArrayList<Connect> users = new ArrayList<Connect>(); //Alla användare skall sparas. 
 	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); //Alla aktiva trådar. 
 	private LinkedList<Message> waitingMessages = new LinkedList<Message>();//Lagrar meddelanden som inte kommit fram
@@ -81,7 +80,7 @@ public class ServerController {
 		private String clientID;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
-		String onlineStr = "";
+		private ArrayList<String> onlineUsersList = new ArrayList<String>();
 
 		public ClientHandler(Socket socket) {
 			this.socket = socket;
@@ -94,7 +93,6 @@ public class ServerController {
 				ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
-
 					Object object = ois.readObject();
 
 					if (object instanceof Connect) {
@@ -114,17 +112,8 @@ public class ServerController {
 						sui.ta_chat.append(username + " has joined the chat\n");
 						log.logServerMessage(username + " has connected");
 						msgWaitingForClient(); // Denna metoden är inte färdig!
-
-						Message msgToClient = new Message();
-						msgToClient.setSender("Server");
-						for (ClientHandler ch : threads) {
-							onlineStr += ch.getClientID() + " ";
-						}
-						msgToClient.setText(onlineStr + "är online");
-
-						for (ClientHandler ch : threads) {
-							ch.sendMessage(msgToClient);
-						}
+						
+						updateUsers();
 
 					} else if (object instanceof String) {
 						clientID = (String) object;
@@ -144,7 +133,11 @@ public class ServerController {
 								if (ch.equals(this)) {
 									threads.remove(ch);
 								}
+								
+								updateUsers();
+								
 							}
+							
 						} else {
 							log.logMessage(msg, msg.getSender());
 							boolean threadIsActive = true;
@@ -166,7 +159,7 @@ public class ServerController {
 									Message message = msg;
 									message.setReciver(ch.getClientID());
 									waitingMessages.addLast(message);
-									sui.ta_chat.append("< " + clientID + " !--> " + recievers[i] + " > Message: \" " + msg.getMsg() + "\"will be sent when"+ recievers[i]+ " is online\n");
+									sui.ta_chat.append("< " + clientID + " !--> " + recievers[i] + " > Message: \" " + msg.getMsg() + "\"will be sent when "+ recievers[i]+ " is online\n");
 								}
 								}
 							}
@@ -176,11 +169,35 @@ public class ServerController {
 
 				}
 			} catch (IOException e) {
-				log.logServerMessage(clientID + " has disconnected");
-			//	e.printStackTrace();
+				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
 			}
+		}
+		
+		public void updateUsers(){
+			for(ClientHandler ch : threads){
+				onlineUsersList.add(ch.getClientID());
+			}
+			
+			int counter = 0;
+			
+			for(int i = 0; i < onlineUsersList.size(); i++){
+				if(onlineUsersList.get(i) != null){
+					counter++;
+				}
+			}
+			
+			String[] onlineUsersArray = new String[counter];
+			
+			for(int i = 0; i < onlineUsersArray.length; i++){
+				onlineUsersArray[i] = onlineUsersList.get(i);
+			}
+			
+			try{
+				oos.writeObject(onlineUsersArray);
+				oos.flush();
+			}catch(IOException e){}
 		}
 
 		public String getClientID() {
