@@ -2,12 +2,10 @@ package chatt;
 
 import javax.swing.ImageIcon;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
@@ -17,6 +15,8 @@ public class Message implements Serializable{
 	private String reciever, sender;
 
 	public Message() {
+//		inputText();
+//		new SelectPicture();
 	}
 	
 	public void setText(String text){
@@ -39,27 +39,24 @@ public class Message implements Serializable{
 		text = JOptionPane.showInputDialog("Skriv meddelande");
 	}
 	
+	public void setPicture(){
+		new SelectPicture();
+	}
+	
 	private class SelectPicture{
 		public SelectPicture(){
-			System.out.println("1");
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("jpg", "png", "gif");
 			JFileChooser filechooser = new JFileChooser();
-			System.out.println("2");
-//			filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			filechooser.setFileFilter(filter);
-			System.out.println("3");
-			int returnVal = filechooser.showOpenDialog(null); //<<
-			System.out.println("4");
+			int returnVal = filechooser.showOpenDialog(null);
 			if(returnVal == JFileChooser.APPROVE_OPTION){
 				File file = filechooser.getSelectedFile();
 				BufferedImage bi;
 				try{
 					bi = ImageIO.read(file);
 					picture = new ImageIcon(bi);
-				}catch(IOException e){}
-				
+				}catch(IOException e){}	
 			}
-			JOptionPane.showMessageDialog(null, picture);
 		}
 	}
 	
