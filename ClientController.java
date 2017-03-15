@@ -55,6 +55,27 @@ public class ClientController {
         }
     }
 	
+	public void disconnect(){
+		if(isConnected){
+			try {
+				
+				isConnected = false;
+				gui.addToChat("Computer", "You are now diconnected.");
+				Message msg = new Message();
+				msg.setSender(username);
+				msg.setReciver("disconnect");
+				oos.writeObject(msg);
+				oos.flush();
+				socket.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}else{
+			gui.addToChat("Computer", "You are not even connected, connect first if you want to disconnect! ");
+		}
+		
+	}
+	
 	private class Listener extends Thread {
 		public void run() {
 			try {

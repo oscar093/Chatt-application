@@ -15,6 +15,7 @@ public class MainGUI {
     private JTextField usernameChooser;
     private JFrame preFrame;
     private JButton connect;
+    private JButton disConnect;
     
     private ClientController cc;
 
@@ -72,6 +73,10 @@ public class MainGUI {
         JPanel southPanel = new JPanel();
         southPanel.setBackground(Color.BLACK);
         southPanel.setLayout(new GridBagLayout());
+        
+        JPanel northPanel = new JPanel();
+        northPanel.setBackground(Color.WHITE);
+        northPanel.setLayout(new GridBagLayout());
 
         messageBox = new JTextField(30);
         messageBox.requestFocusInWindow();
@@ -84,6 +89,17 @@ public class MainGUI {
 
 			public void actionPerformed(ActionEvent e) {
 				cc.connect(e);
+				
+			}
+        	
+        });
+        
+        disConnect = new JButton("Disconnect");
+        disConnect.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cc.disconnect();
 				
 			}
         	
@@ -111,10 +127,13 @@ public class MainGUI {
 
         southPanel.add(messageBox, left);
         southPanel.add(sendMessage, right);
-        southPanel.add(connect);
-       
+        
+        northPanel.add(connect);
+        northPanel.add(disConnect);        
 
         mainPanel.add(BorderLayout.SOUTH, southPanel);
+        mainPanel.add(BorderLayout.NORTH, northPanel);
+        
 
         newFrame.add(mainPanel);
         newFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);

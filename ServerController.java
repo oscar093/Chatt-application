@@ -29,7 +29,7 @@ public class ServerController {
 	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); //Alla aktiva trådar. 
 	private LogHandler log;
 	
-	public ServerController(int port) {
+	public ServerController(int port) throws SecurityException, IOException {
 		this.port = port;
 		log = new LogHandler();
 		try {
@@ -91,18 +91,18 @@ public class ServerController {
 				ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
-					waitingForClient(); //Måste kolla igenom denna metoden.. 
+					waitingForClient(); // Denna metoden är inte färdig!
 					Object object = ois.readObject();
-					
-					if(object instanceof Connect) {
+
+					if (object instanceof Connect) {
 						String username;
 						username = ((Connect) object).getUsername();
 						this.clientID = username;
-						users.add((Connect)object);
-						sui.ta_chat.append(username + " is now connected\n");
+						users.add((Connect) object);
+						sui.ta_chat.append(username + " has joined the chat\n");
 						log.logServerMessage(username + " has connected");
-						
-					}else if (object instanceof String) {
+
+					} else if (object instanceof String) {
 						clientID = (String) object;
 						for (Connect usrs : users) {
 							if (!clientID.equals(usrs.getUsername())) {
@@ -110,28 +110,33 @@ public class ServerController {
 								users.add(connect);
 							}
 						}
-						
-					}else if (object instanceof Message) {
+
+					} else if (object instanceof Message) {
 						Message msg = (Message) object;
-//						msg.inputMessage(object);
-						sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever()+ " > " + msg.getMsg()+ "\n");
-						log.logMessage(msg, msg.getSender());
-					//	JOptionPane.showMessageDialog(null, msg.getPicture());
-						boolean threadIsActive = false;
-						for(ClientHandler ch : threads){
-							if(ch.getClientID().equals(msg.getReciever())){
-								ch.sendMessage(msg);
-								threadIsActive = true;
+						if (msg.getReciever().equals("disconnect")) {
+							sui.ta_chat.append(clientID + " has left the chat\n");
+							log.logServerMessage(clientID + " is diconnected");
+						} else {
+							sui.ta_chat.append(
+									"< " + clientID + " --> " + msg.getReciever() + " > " + msg.getMsg() + "\n");
+							log.logMessage(msg, msg.getSender());
+							boolean threadIsActive = false;
+							for (ClientHandler ch : threads) {
+								if (ch.getClientID().equals(msg.getReciever())) {
+									ch.sendMessage(msg);
+									threadIsActive = true;
+								}
 							}
-						}
-						if(!threadIsActive){
-							for(Connect c : users){
-								if(c.getUsername().equals(msg.getReciever())){
-									c.addMessage(msg);
+							if (!threadIsActive) {
+								for (Connect c : users) {
+									if (c.getUsername().equals(msg.getReciever())) {
+										c.addMessage(msg);
+									}
 								}
 							}
 						}
 					}
+
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
