@@ -39,17 +39,16 @@ public class Message implements Serializable{
 		text = JOptionPane.showInputDialog("Skriv meddelande");
 	}
 	
+	public void setPicture(){
+		new SelectPicture();
+	}
+	
 	private class SelectPicture{
 		public SelectPicture(){
-			System.out.println("1");
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("jpg", "png", "gif");
 			JFileChooser filechooser = new JFileChooser();
-			System.out.println("2");
-//			filechooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
 			filechooser.setFileFilter(filter);
-			System.out.println("3");
 			int returnVal = filechooser.showOpenDialog(null); //<<
-			System.out.println("4");
 			if(returnVal == JFileChooser.APPROVE_OPTION){
 				File file = filechooser.getSelectedFile();
 				BufferedImage bi;
@@ -59,7 +58,6 @@ public class Message implements Serializable{
 				}catch(IOException e){}
 				
 			}
-			JOptionPane.showMessageDialog(null, picture);
 		}
 	}
 	
