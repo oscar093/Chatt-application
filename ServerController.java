@@ -25,14 +25,14 @@ public class ServerController {
 	private Thread server;
 	private int port;
 	private ServerUI sui = new ServerUI(this);
-	private final static Logger LOGGER = Logger.getLogger("ServerLogg");
 	private ArrayList<Connect> users = new ArrayList<Connect>(); //Alla användare skall sparas. 
 	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); //Alla aktiva trådar. 
-
+	private LogHandler log;
+	
 	public ServerController(int port) {
 		this.port = port;
+		log = new LogHandler();
 		try {
-			createLoggFile();
 			this.serverSocket = new ServerSocket(port);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -52,25 +52,13 @@ public class ServerController {
 		this.server.start();
 	}
 	
-	public void createLoggFile() throws IOException {
-		String filename = "logfile_" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date());
-		File file = new File("./loggs/" + filename);
-		if (!file.getParentFile().exists()) {
-			file.getParentFile().mkdirs();
-		}
-		FileHandler fh = new FileHandler("./loggs/" + filename + ".txt");
-		LOGGER.setUseParentHandlers(false);
-		LOGGER.addHandler(fh);
-		SimpleFormatter formatter = new SimpleFormatter();
-		fh.setFormatter(formatter);
-
-
-	}
 
 	private class ClientListener extends Thread {
 
 		public void run() {
 			sui.ta_chat.append("Server igång på port: " + serverSocket.getLocalPort() + "\n");
+			log.logServerMessage("Server started");
+			
 			while (true) {
 				try {
 
@@ -112,6 +100,8 @@ public class ServerController {
 						this.clientID = username;
 						users.add((Connect)object);
 						sui.ta_chat.append(username + " is now connected\n");
+						log.logServerMessage(username + " has connected");
+						
 					}else if (object instanceof String) {
 						clientID = (String) object;
 						for (Connect usrs : users) {
@@ -125,7 +115,8 @@ public class ServerController {
 						Message msg = (Message) object;
 //						msg.inputMessage(object);
 						sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever()+ " > " + msg.getMsg()+ "\n");
-//						JOptionPane.showMessageDialog(null, msg.getPicture());
+						log.logMessage(msg, msg.getSender());
+					//	JOptionPane.showMessageDialog(null, msg.getPicture());
 						boolean threadIsActive = false;
 						for(ClientHandler ch : threads){
 							if(ch.getClientID().equals(msg.getReciever())){
