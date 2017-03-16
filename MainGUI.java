@@ -31,39 +31,39 @@ public class MainGUI {
                     e.printStackTrace();
                 }
                 MainGUI mainGUI = new MainGUI();
-                mainGUI.preDisplay();
+//                mainGUI.preDisplay();
             }
         });
     }
 
-    public void preDisplay() {
-        newFrame.setVisible(false);
-        preFrame = new JFrame(appName);
-        preFrame.setSize(800,600);
-        usernameChooser = new JTextField(15);
-        JLabel chooseUsernameLabel = new JLabel("Pick a username:");
-        JButton enterServer = new JButton("Enter Chat Server");
-        enterServer.addActionListener(new enterServerButtonListener());
-        JPanel prePanel = new JPanel(new GridBagLayout());
-
-        GridBagConstraints preRight = new GridBagConstraints();
-        preRight.insets = new Insets(0, 0, 0, 10);
-        preRight.anchor = GridBagConstraints.EAST;
-        GridBagConstraints preLeft = new GridBagConstraints();
-        preLeft.anchor = GridBagConstraints.WEST;
-        preLeft.insets = new Insets(0, 10, 0, 10);
-        // preRight.weightx = 2.0;
-        preRight.fill = GridBagConstraints.HORIZONTAL;
-        preRight.gridwidth = GridBagConstraints.REMAINDER;
-
-        prePanel.add(chooseUsernameLabel, preLeft);
-        prePanel.add(usernameChooser, preRight);
-        preFrame.add(BorderLayout.CENTER, prePanel);
-        preFrame.add(BorderLayout.SOUTH, enterServer);
-        preFrame.setSize(300, 300);
-        preFrame.setVisible(true);
-
-    }
+//    public void preDisplay() {
+//        newFrame.setVisible(false);
+//        preFrame = new JFrame(appName);
+//        preFrame.setSize(800,600);
+//        usernameChooser = new JTextField(15);
+//        JLabel chooseUsernameLabel = new JLabel("Pick a username:");
+//        JButton enterServer = new JButton("Enter Chat Server");
+//        enterServer.addActionListener(new enterServerButtonListener());
+//        JPanel prePanel = new JPanel(new GridBagLayout());
+//
+//        GridBagConstraints preRight = new GridBagConstraints();
+//        preRight.insets = new Insets(0, 0, 0, 10);
+//        preRight.anchor = GridBagConstraints.EAST;
+//        GridBagConstraints preLeft = new GridBagConstraints();
+//        preLeft.anchor = GridBagConstraints.WEST;
+//        preLeft.insets = new Insets(0, 10, 0, 10);
+//        // preRight.weightx = 2.0;
+//        preRight.fill = GridBagConstraints.HORIZONTAL;
+//        preRight.gridwidth = GridBagConstraints.REMAINDER;
+//
+//        prePanel.add(chooseUsernameLabel, preLeft);
+//        prePanel.add(usernameChooser, preRight);
+//        preFrame.add(BorderLayout.CENTER, prePanel);
+//        preFrame.add(BorderLayout.SOUTH, enterServer);
+//        preFrame.setSize(300, 300);
+//        preFrame.setVisible(true);
+//
+//    }
     
     
 

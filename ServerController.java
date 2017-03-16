@@ -140,7 +140,7 @@ public class ServerController {
 
 					} else if (object instanceof Message) {
 						Message msg = (Message) object;
-						if(msg.getMsg().contentEquals("disconnect")){
+						if (msg.getMsg().contentEquals("disconnect")) {
 							sui.ta_chat.append(clientID + " has left the chat\n");
 							log.logServerMessage(clientID + " is disconnected");
 							for (ClientHandler ch : threads) {
@@ -150,6 +150,7 @@ public class ServerController {
 							}
 							for (int i = 0; i < onlineUsersList.size(); i++) {
 								if (onlineUsersList.get(i).contentEquals(clientID)) {
+									System.out.println(onlineUsersList.get(i) + " tas bort");
 									onlineUsersList.remove(i);
 								}
 							}
@@ -218,11 +219,11 @@ public class ServerController {
 			}
 
 			try {
-//				for (int i = 0; i < onlineUsersArray.length; i++) {
-//					System.out.println(onlineUsersArray[i]);
-//				}
-				oos.writeObject(onlineUsersArray);
-				oos.flush();
+				for (ClientHandler ch : threads) {
+					ch.oos.writeObject(onlineUsersArray);
+					ch.oos.flush();
+				}
+
 			} catch (IOException e) {
 			}
 		}

@@ -94,7 +94,6 @@ public class ClientController {
 						String[] onlineUsers = (String[]) obj;
 						gui.removeAllCheckBoxes();
 						for (int i = 0; i < onlineUsers.length; i++) {
-//							gui.removeAllCheckBoxes();
 							gui.addNewUserCheckBox(onlineUsers[i]);
 						}
 					}
