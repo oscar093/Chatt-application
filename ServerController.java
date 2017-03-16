@@ -145,16 +145,21 @@ public class ServerController {
 							log.logServerMessage(clientID + " is disconnected");
 							for (ClientHandler ch : threads) {
 								if (ch.equals(this)) {
+									System.out.println(ch + " tas bort som tråd");
 									threads.remove(ch);
 								}
 							}
+
 							for (int i = 0; i < onlineUsersList.size(); i++) {
-								if (onlineUsersList.get(i).contentEquals(clientID)) {
-									System.out.println(onlineUsersList.get(i) + " tas bort");
-									onlineUsersList.remove(i);
-								}
+//								System.out.println(onlineUsersList.get(i) + " tas bort från listan");
+//								onlineUsersList.removeAll(onlineUsersList);
+								onlineUsersList.remove(onlineUsersList.get(i));
 							}
 
+							for (ClientHandler ch : threads) {
+								onlineUsersList.add(ch.clientID);
+							}
+							
 							updateUsers(onlineUsersList);
 
 						} else {
@@ -223,7 +228,6 @@ public class ServerController {
 					ch.oos.writeObject(onlineUsersArray);
 					ch.oos.flush();
 				}
-
 			} catch (IOException e) {
 			}
 		}

@@ -91,7 +91,11 @@ public class ClientController {
 						}
 					}
 					if (obj instanceof String[]) {
-						String[] onlineUsers = (String[]) obj;
+						String[] temp = (String[]) obj;
+						String[] onlineUsers = new String[temp.length];
+						for(int i = 0; i < onlineUsers.length; i++){
+							onlineUsers[i] = temp[i];
+						}
 						gui.removeAllCheckBoxes();
 						for (int i = 0; i < onlineUsers.length; i++) {
 							gui.addNewUserCheckBox(onlineUsers[i]);
