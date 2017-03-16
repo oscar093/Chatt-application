@@ -17,7 +17,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 
 public class ServerController {
 	private ServerSocket serverSocket;
@@ -140,7 +140,9 @@ public class ServerController {
 
 					} else if (object instanceof Message) {
 						Message msg = (Message) object;
-						if (msg.getMsg().contentEquals("disconnect")) {
+//						
+
+						 if (msg.getMsg().contentEquals("disconnect")) {
 							sui.ta_chat.append(clientID + " has left the chat\n");
 							log.logServerMessage(clientID + " is disconnected");
 							for (ClientHandler ch : threads) {
@@ -151,21 +153,22 @@ public class ServerController {
 							}
 
 							for (int i = 0; i < onlineUsersList.size(); i++) {
-//								System.out.println(onlineUsersList.get(i) + " tas bort från listan");
-//								onlineUsersList.removeAll(onlineUsersList);
+								// System.out.println(onlineUsersList.get(i)
+								// + " tas bort från listan");
+								// onlineUsersList.removeAll(onlineUsersList);
 								onlineUsersList.remove(onlineUsersList.get(i));
 							}
 
 							for (ClientHandler ch : threads) {
 								onlineUsersList.add(ch.clientID);
 							}
-							
+
 							updateUsers(onlineUsersList);
 
 						} else {
 							log.logMessage(msg, msg.getSender());
 							boolean threadIsActive = true;
-							String[] recievers = (String[]) msg.getReciever();
+							String[] recievers = msg.getReciever();
 							for (int i = 0; i < recievers.length; i++) {
 								for (ClientHandler ch : threads) {
 									if (ch.getClientID().equals(recievers[i])) {
@@ -180,15 +183,19 @@ public class ServerController {
 											threadIsActive = false;
 										}
 									}
-									if (!threadIsActive) { // Den skall inte in
+									if (!threadIsActive) { // Den skall inte
+															// in
 															// här om
 															// meddelandet
-															// skickats iväg,
-															// men den gör det
-															// iaf. Detta skall
+															// skickats
+															// iväg,
+															// men den gör
+															// det
+															// iaf. Detta
+															// skall
 															// fixa.
 										Message message = msg;
-										message.setReciver(ch.getClientID());
+										message.setReciever(ch.getClientID());
 										waitingMessages.addLast(message);
 										sui.ta_chat.append("< " + clientID + " !--> " + recievers[i] + " > Message: \" "
 												+ msg.getMsg() + "\"will be sent when " + recievers[i]
@@ -198,6 +205,7 @@ public class ServerController {
 							}
 
 						}
+
 					}
 
 				}

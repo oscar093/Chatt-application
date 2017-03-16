@@ -93,7 +93,7 @@ public class ClientController {
 					if (obj instanceof String[]) {
 						String[] temp = (String[]) obj;
 						String[] onlineUsers = new String[temp.length];
-						for(int i = 0; i < onlineUsers.length; i++){
+						for (int i = 0; i < onlineUsers.length; i++) {
 							onlineUsers[i] = temp[i];
 						}
 						gui.removeAllCheckBoxes();
@@ -116,10 +116,10 @@ public class ClientController {
 			try {
 				Message message = new Message();
 				String reciever = JOptionPane.showInputDialog("Skriv in mottagare");
-				message.setReciver(reciever);
+				message.setReciever(reciever);
 				message.setSender(username);
 				message.setText(gui.getMessageBox());
-				message.setPicture();
+				// message.setPicture();
 				this.oos.writeObject(message);
 				this.oos.flush();
 			} catch (IOException e) {
@@ -129,4 +129,24 @@ public class ClientController {
 			gui.addToChat("Computer", "Cannot Connect! Press Connect!");
 		}
 	}
+
+	public void sendPicture(){
+		if (isConnected == true) {
+			try{
+		Message message = new Message();
+		String reciever = JOptionPane.showInputDialog("Skriv in mottagare");
+		message.setReciever(reciever);
+		message.setSender(username);
+		message.setText(gui.getMessageBox());
+		message.setPicture();
+		this.oos.writeObject(message);
+		this.oos.flush();
+//		message.setText(gui.getMessageBox());
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		}
+
+}
 }
