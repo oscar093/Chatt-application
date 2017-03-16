@@ -92,9 +92,10 @@ public class ClientController {
 					}
 					if (obj instanceof String[]) {
 						String[] onlineUsers = (String[]) obj;
+						gui.removeAllCheckBoxes();
 						for (int i = 0; i < onlineUsers.length; i++) {
-							// JOptionPane.showMessageDialog(null, onlineUsers[i]);
-							gui.addToChat("Server", onlineUsers[i] + " är online");
+//							gui.removeAllCheckBoxes();
+							gui.addNewUserCheckBox(onlineUsers[i]);
 						}
 					}
 				}

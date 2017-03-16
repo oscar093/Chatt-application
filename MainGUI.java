@@ -16,6 +16,7 @@ public class MainGUI {
     private JFrame preFrame;
     private JButton connect;
     private JButton disConnect;
+    private JPanel eastPanel;
     
     private ClientController cc;
 
@@ -78,9 +79,10 @@ public class MainGUI {
         northPanel.setBackground(Color.WHITE);
         northPanel.setLayout(new GridBagLayout());
         
-        JPanel eastPanel = new JPanel();
+        eastPanel = new JPanel();
         eastPanel.setBackground(Color.WHITE);
         eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.PAGE_AXIS));
+        eastPanel.setPreferredSize(new Dimension(100, 100));
         
         messageBox = new JTextField(30);
         messageBox.requestFocusInWindow();
@@ -131,8 +133,8 @@ public class MainGUI {
         northPanel.add(connect);
         northPanel.add(disConnect);  
         
-        eastPanel.add(new JCheckBox("USSER"));
-        eastPanel.add(new JCheckBox("SURREX"));  
+//        eastPanel.add(new JCheckBox("USSER"));
+//        eastPanel.add(new JCheckBox("SURREX"));  
 
         mainPanel.add(BorderLayout.SOUTH, southPanel);
         mainPanel.add(BorderLayout.NORTH, northPanel);
@@ -200,5 +202,15 @@ public class MainGUI {
     
     public void setClientName(String name){
     	this.newFrame.setTitle(name);
+    }
+    
+    public void addNewUserCheckBox(String username){
+    	eastPanel.add(new JCheckBox(username));
+    	eastPanel.updateUI();
+    }
+    
+    public void removeAllCheckBoxes(){
+    	eastPanel.removeAll();
+    	eastPanel.updateUI();
     }
 }
