@@ -125,6 +125,10 @@ public class ServerController {
 						log.logServerMessage(username + " has connected");
 						msgWaitingForClient(); // Denna metoden är inte färdig!
 
+						if(onlineUsersList.size() > 0){
+							onlineUsersList.removeAll(onlineUsersList);
+						}
+						
 						for (ClientHandler ch : threads) {
 							onlineUsersList.add(ch.getClientID());
 						}
@@ -152,18 +156,13 @@ public class ServerController {
 									it.remove();
 								}
 							}
-
-							for (int i = 0; i < onlineUsersList.size(); i++) {
-								onlineUsersList.remove(i);
-							}
+							onlineUsersList.removeAll(onlineUsersList);
 
 							for (ClientHandler ch : threads) {
 								onlineUsersList.add(ch.clientID);
 							}
-
-							for (ClientHandler ch : threads) {
-								ch.updateUsers(onlineUsersList);
-							}
+							
+							updateUsers(onlineUsersList);
 
 						} else {
 							log.logMessage(msg, msg.getSender());

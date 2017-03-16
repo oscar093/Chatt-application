@@ -85,7 +85,7 @@ public class ClientController {
 							gui.addToChat(msg.getSender(), msg.getMsg());
 						}
 						if (msg.getPicture() != null) {
-							JOptionPane.showMessageDialog(null, "Bild skickad frÃ¥n " + msg.getSender());
+							JOptionPane.showMessageDialog(null, "Bild skickad från " + msg.getSender());
 							JOptionPane.showMessageDialog(null, msg.getPicture());
 						}
 					}
