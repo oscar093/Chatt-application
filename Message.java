@@ -64,7 +64,7 @@ public class Message implements Serializable{
 		}
 	}
 	
-	public void setReciver(String recievers){
+	public void setReciever(String recievers){
 		this.recievers = recievers;
 		
 		
