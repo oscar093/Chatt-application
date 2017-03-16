@@ -62,7 +62,7 @@ public class ClientController {
 				gui.addToChat("Computer", "You are now diconnected.");
 				Message msg = new Message();
 				msg.setSender(username);
-				msg.setReciver("disconnect");
+				msg.setText("disconnect");
 				oos.writeObject(msg);
 				oos.flush();
 				socket.close();
@@ -82,16 +82,19 @@ public class ClientController {
 					Object obj = ois.readObject();
 					if (obj instanceof Message) {
 						Message msg = (Message) obj;
-						gui.addToChat(msg.getSender(), msg.getMsg());
+						if (!msg.getMsg().isEmpty()) {
+							gui.addToChat(msg.getSender(), msg.getMsg());
+						}
 						if (msg.getPicture() != null) {
 							JOptionPane.showMessageDialog(null, "Bild skickad från " + msg.getSender());
 							JOptionPane.showMessageDialog(null, msg.getPicture());
 						}
 					}
 					if (obj instanceof String[]) {
-						String[] onlineUsers = (String[])obj;
-						for(int i = 0; i < onlineUsers.length; i++){
-							JOptionPane.showMessageDialog(null, onlineUsers[i]); //ska vara typ gui.setText(onlineUsers[i]);
+						String[] onlineUsers = (String[]) obj;
+						for (int i = 0; i < onlineUsers.length; i++) {
+							// JOptionPane.showMessageDialog(null, onlineUsers[i]);
+							gui.addToChat("Server", onlineUsers[i] + " är online");
 						}
 					}
 				}
