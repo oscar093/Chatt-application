@@ -77,7 +77,11 @@ public class MainGUI {
         JPanel northPanel = new JPanel();
         northPanel.setBackground(Color.WHITE);
         northPanel.setLayout(new GridBagLayout());
-
+        
+        JPanel eastPanel = new JPanel();
+        eastPanel.setBackground(Color.WHITE);
+        eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.PAGE_AXIS));
+        
         messageBox = new JTextField(30);
         messageBox.requestFocusInWindow();
 
@@ -125,10 +129,14 @@ public class MainGUI {
         southPanel.add(sendMessage, right);
         
         northPanel.add(connect);
-        northPanel.add(disConnect);        
+        northPanel.add(disConnect);  
+        
+        eastPanel.add(new JCheckBox("USSER"));
+        eastPanel.add(new JCheckBox("SURREX"));  
 
         mainPanel.add(BorderLayout.SOUTH, southPanel);
         mainPanel.add(BorderLayout.NORTH, northPanel);
+        mainPanel.add(BorderLayout.EAST, eastPanel);
         
 
         newFrame.add(mainPanel);
@@ -139,7 +147,9 @@ public class MainGUI {
 
     class sendMessageButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
-            if (messageBox.getText().equals(".clear")) {
+            if (messageBox.getText().length() < 1) {
+                // do nothing
+            } else if (messageBox.getText().equals(".clear")) {
                 chatBox.setText("Cleared all messages\n");
                 messageBox.setText("");
             } else {
