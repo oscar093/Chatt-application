@@ -12,12 +12,13 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
-import javax.swing.*;
+import javax.swing.JOptionPane;
 
 public class ServerController {
 	private ServerSocket serverSocket;
@@ -38,6 +39,7 @@ public class ServerController {
 																			// inte
 																			// kommit
 																			// fram
+	private ArrayList<String> onlineUsersList = new ArrayList<String>();
 
 	private LogHandler log;
 
@@ -90,7 +92,7 @@ public class ServerController {
 		private String clientID;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
-		private ArrayList<String> onlineUsersList = new ArrayList<String>();
+//		private ArrayList<String> onlineUsersList = new ArrayList<String>();
 
 		public ClientHandler(Socket socket) {
 			this.socket = socket;
@@ -140,35 +142,33 @@ public class ServerController {
 
 					} else if (object instanceof Message) {
 						Message msg = (Message) object;
-//						
-
-						 if (msg.getMsg().contentEquals("disconnect")) {
+						if (msg.getMsg().contentEquals("disconnect")) {
 							sui.ta_chat.append(clientID + " has left the chat\n");
 							log.logServerMessage(clientID + " is disconnected");
-							for (ClientHandler ch : threads) {
+
+							for (Iterator<ClientHandler> it = threads.iterator(); it.hasNext();) {
+								ClientHandler ch = it.next();
 								if (ch.equals(this)) {
-									System.out.println(ch + " tas bort som tråd");
-									threads.remove(ch);
+									it.remove();
 								}
 							}
 
 							for (int i = 0; i < onlineUsersList.size(); i++) {
-								// System.out.println(onlineUsersList.get(i)
-								// + " tas bort från listan");
-								// onlineUsersList.removeAll(onlineUsersList);
-								onlineUsersList.remove(onlineUsersList.get(i));
+								onlineUsersList.remove(i);
 							}
 
 							for (ClientHandler ch : threads) {
 								onlineUsersList.add(ch.clientID);
 							}
 
-							updateUsers(onlineUsersList);
+							for (ClientHandler ch : threads) {
+								ch.updateUsers(onlineUsersList);
+							}
 
 						} else {
 							log.logMessage(msg, msg.getSender());
 							boolean threadIsActive = true;
-							String[] recievers = msg.getReciever();
+							String[] recievers = (String[]) msg.getReciever();
 							for (int i = 0; i < recievers.length; i++) {
 								for (ClientHandler ch : threads) {
 									if (ch.getClientID().equals(recievers[i])) {
@@ -183,16 +183,12 @@ public class ServerController {
 											threadIsActive = false;
 										}
 									}
-									if (!threadIsActive) { // Den skall inte
-															// in
+									if (!threadIsActive) { // Den skall inte in
 															// här om
 															// meddelandet
-															// skickats
-															// iväg,
-															// men den gör
-															// det
-															// iaf. Detta
-															// skall
+															// skickats iväg,
+															// men den gör det
+															// iaf. Detta skall
 															// fixa.
 										Message message = msg;
 										message.setReciever(ch.getClientID());
@@ -205,7 +201,6 @@ public class ServerController {
 							}
 
 						}
-
 					}
 
 				}
