@@ -6,6 +6,11 @@ import java.awt.event.ActionListener;
 
 import javax.swing.*;
 
+/**
+ * A class that represents the GUI for the clients
+ * @author Group 2
+ *
+ */
 public class MainGUI {
     private String appName = "ChattClient";
     private JFrame newFrame = new JFrame(appName);
@@ -16,8 +21,6 @@ public class MainGUI {
     private JFrame preFrame;
     private JButton connect;
     private JButton disConnect;
-    private JPanel eastPanel;
-    
     private ClientController cc;
 
     public static void main(String[] args) {
@@ -31,42 +34,48 @@ public class MainGUI {
                     e.printStackTrace();
                 }
                 MainGUI mainGUI = new MainGUI();
-//                mainGUI.preDisplay();
+                mainGUI.preDisplay();
             }
         });
     }
 
-//    public void preDisplay() {
-//        newFrame.setVisible(false);
-//        preFrame = new JFrame(appName);
-//        preFrame.setSize(800,600);
-//        usernameChooser = new JTextField(15);
-//        JLabel chooseUsernameLabel = new JLabel("Pick a username:");
-//        JButton enterServer = new JButton("Enter Chat Server");
-//        enterServer.addActionListener(new enterServerButtonListener());
-//        JPanel prePanel = new JPanel(new GridBagLayout());
-//
-//        GridBagConstraints preRight = new GridBagConstraints();
-//        preRight.insets = new Insets(0, 0, 0, 10);
-//        preRight.anchor = GridBagConstraints.EAST;
-//        GridBagConstraints preLeft = new GridBagConstraints();
-//        preLeft.anchor = GridBagConstraints.WEST;
-//        preLeft.insets = new Insets(0, 10, 0, 10);
-//        // preRight.weightx = 2.0;
-//        preRight.fill = GridBagConstraints.HORIZONTAL;
-//        preRight.gridwidth = GridBagConstraints.REMAINDER;
-//
-//        prePanel.add(chooseUsernameLabel, preLeft);
-//        prePanel.add(usernameChooser, preRight);
-//        preFrame.add(BorderLayout.CENTER, prePanel);
-//        preFrame.add(BorderLayout.SOUTH, enterServer);
-//        preFrame.setSize(300, 300);
-//        preFrame.setVisible(true);
-//
-//    }
-    
-    
+    /**
+     * A method for showing the first display for a client
+     */
+    public void preDisplay() {
+        newFrame.setVisible(false);
+        preFrame = new JFrame(appName);
+        preFrame.setSize(800,600);
+        usernameChooser = new JTextField(15);
+        JLabel chooseUsernameLabel = new JLabel("Pick a username:");
+        JButton enterServer = new JButton("Enter Chat Server");
+        enterServer.addActionListener(new enterServerButtonListener());
+        JPanel prePanel = new JPanel(new GridBagLayout());
 
+        GridBagConstraints preRight = new GridBagConstraints();
+        preRight.insets = new Insets(0, 0, 0, 10);
+        preRight.anchor = GridBagConstraints.EAST;
+        GridBagConstraints preLeft = new GridBagConstraints();
+        preLeft.anchor = GridBagConstraints.WEST;
+        preLeft.insets = new Insets(0, 10, 0, 10);
+        // preRight.weightx = 2.0;
+        preRight.fill = GridBagConstraints.HORIZONTAL;
+        preRight.gridwidth = GridBagConstraints.REMAINDER;
+
+        prePanel.add(chooseUsernameLabel, preLeft);
+        prePanel.add(usernameChooser, preRight);
+        preFrame.add(BorderLayout.CENTER, prePanel);
+        preFrame.add(BorderLayout.SOUTH, enterServer);
+        preFrame.setSize(300, 300);
+        preFrame.setVisible(true);
+
+    }
+    
+    
+    /**
+     * A method for showing the second display for the client
+     * This is the display where the different clients communicates with each other
+     */
     public void display() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -78,12 +87,7 @@ public class MainGUI {
         JPanel northPanel = new JPanel();
         northPanel.setBackground(Color.WHITE);
         northPanel.setLayout(new GridBagLayout());
-        
-        eastPanel = new JPanel();
-        eastPanel.setBackground(Color.WHITE);
-        eastPanel.setLayout(new BoxLayout(eastPanel, BoxLayout.PAGE_AXIS));
-        eastPanel.setPreferredSize(new Dimension(100, 100));
-        
+
         messageBox = new JTextField(30);
         messageBox.requestFocusInWindow();
 
@@ -131,14 +135,10 @@ public class MainGUI {
         southPanel.add(sendMessage, right);
         
         northPanel.add(connect);
-        northPanel.add(disConnect);  
-        
-//        eastPanel.add(new JCheckBox("USSER"));
-//        eastPanel.add(new JCheckBox("SURREX"));  
+        northPanel.add(disConnect);        
 
         mainPanel.add(BorderLayout.SOUTH, southPanel);
         mainPanel.add(BorderLayout.NORTH, northPanel);
-        mainPanel.add(BorderLayout.EAST, eastPanel);
         
 
         newFrame.add(mainPanel);
@@ -147,6 +147,11 @@ public class MainGUI {
         newFrame.setVisible(true);
     }
 
+    /**
+     * A inner class that 
+     * @author Group 2
+     *
+     */
     class sendMessageButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             if (messageBox.getText().length() < 1) {
@@ -166,6 +171,11 @@ public class MainGUI {
 
     String  username;
 
+    /**
+     * Inner class that
+     * @author Group 2
+     *
+     */
     class enterServerButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             username = usernameChooser.getText();
@@ -177,40 +187,52 @@ public class MainGUI {
             }
         }
     }
-    
+    /**
+     * A method for adding a username and a message to the chat window
+     * @param username, name of the user that sent the message
+     * @param message, text that the user sent 
+     */
     public void addToChat(String username, String message){
     	chatBox.append("<" + username + ">:  " + message + "\n");
     	messageBox.setText("");
     }
-    
+    /**
+     * A method for adding a message to the chat window
+     * @param message A String containing the text that a user sent
+     */
     public void addToChat(String message){
     	chatBox.append("<" + username + ">:  " + message + "\n");
     	messageBox.setText("");
     }
-    
+    /**
+     * A method for setting a username
+     * @param username A String containing the name of the user
+     */
     public void setUsername(String username){
     	this.username = username;
     }
     
+    /**
+     * A method for setting a ClientController
+     * @param cc the ClientController to be set
+     */
     public void setController(ClientController cc){
     	this.cc = cc;
     }
     
+    /**
+     * A method for getting text from the text field
+     * @return a String with the text from text field
+     */
     public String getMessageBox(){
     	return messageBox.getText();
     }
     
+    /**
+     * A method for setting a name for the client
+     * @param name A String containing the name to be set 
+     */
     public void setClientName(String name){
     	this.newFrame.setTitle(name);
-    }
-    
-    public void addNewUserCheckBox(String username){
-    	eastPanel.add(new JCheckBox(username));
-    	eastPanel.updateUI();
-    }
-    
-    public void removeAllCheckBoxes(){
-    	eastPanel.removeAll();
-    	eastPanel.updateUI();
     }
 }

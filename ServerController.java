@@ -18,29 +18,26 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
-
+/**
+ * A class for controlling the server
+ * @author Group 2
+ *
+ */
 public class ServerController {
 	private ServerSocket serverSocket;
 	private ClientListener threadClientListener;
 	private Thread server;
 	private int port;
 	private ServerUI sui = new ServerUI(this);
-	private ArrayList<Connect> users = new ArrayList<Connect>(); // Alla
-																	// användare
-																	// skall
-																	// sparas.
-	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); // Alla
-																				// aktiva
-																				// trådar.
-	private LinkedList<Message> waitingMessages = new LinkedList<Message>();// Lagrar
-																			// meddelanden
-																			// som
-																			// inte
-																			// kommit
-																			// fram
-
+	private ArrayList<Connect> users = new ArrayList<Connect>(); // Alla användare ska sparas
+	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); // Alla aktiva trådar
 	private LogHandler log;
-
+	/**
+	 * A constructor that initializes a ServerController object
+	 * @param port An int with the number of the port 
+	 * @throws SecurityException
+	 * @throws IOException
+	 */
 	public ServerController(int port) throws SecurityException, IOException {
 		this.port = port;
 		log = new LogHandler();
@@ -50,20 +47,30 @@ public class ServerController {
 			e.printStackTrace();
 		}
 	}
-
+	/**
+	 * A method for starting the server's thread
+	 */
 	public void start() {
 		if (this.threadClientListener == null) {
 			this.threadClientListener = new ClientListener();
 			this.threadClientListener.start();
 		}
 	}
-
+	/**
+	 * A method for starting the server
+	 * @param evt is not used
+	 * @throws IOException
+	 */
 	public void startServer(ActionEvent evt) throws IOException {
 		this.server = new Thread();
 		this.serverSocket = new ServerSocket(this.port);
 		this.server.start();
 	}
-
+	/**
+	 * 
+	 * @author Group 2
+	 *
+	 */
 	private class ClientListener extends Thread {
 
 		public void run() {
@@ -90,7 +97,7 @@ public class ServerController {
 		private String clientID;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
-		private ArrayList<String> onlineUsersList = new ArrayList<String>();
+		String onlineStr = "";
 
 		public ClientHandler(Socket socket) {
 			this.socket = socket;
@@ -103,6 +110,7 @@ public class ServerController {
 				ois = new ObjectInputStream(new BufferedInputStream(socket.getInputStream()));
 
 				while (true) {
+
 					Object object = ois.readObject();
 
 					if (object instanceof Connect) {
@@ -115,19 +123,27 @@ public class ServerController {
 								alreadyAUser = true;
 							}
 						}
-						if (!alreadyAUser) {
+						if (!alreadyAUser) { // Av någon anledning går den in i
+												// denna loopen trots att
+												// användaren readan finns..?
 							Connect con = (Connect) object;
 							users.add(con);
+							System.out.println(con.getUsername());
 						}
 						sui.ta_chat.append(username + " has joined the chat\n");
 						log.logServerMessage(username + " has connected");
 						msgWaitingForClient(); // Denna metoden är inte färdig!
 
+						Message msgToClient = new Message();
+						msgToClient.setSender("Server");
 						for (ClientHandler ch : threads) {
-							onlineUsersList.add(ch.getClientID());
+							onlineStr += ch.getClientID() + " ";
 						}
+						msgToClient.setText(onlineStr + "är online");
 
-						updateUsers(onlineUsersList);
+						for (ClientHandler ch : threads) {
+							ch.sendMessage(msgToClient);
+						}
 
 					} else if (object instanceof String) {
 						clientID = (String) object;
@@ -140,7 +156,7 @@ public class ServerController {
 
 					} else if (object instanceof Message) {
 						Message msg = (Message) object;
-						if (msg.getMsg().contentEquals("disconnect")) {
+						if (msg.getReciever().equals("disconnect")) {
 							sui.ta_chat.append(clientID + " has left the chat\n");
 							log.logServerMessage(clientID + " is disconnected");
 							for (ClientHandler ch : threads) {
@@ -148,50 +164,23 @@ public class ServerController {
 									threads.remove(ch);
 								}
 							}
-							for (int i = 0; i < onlineUsersList.size(); i++) {
-								if (onlineUsersList.get(i).contentEquals(clientID)) {
-									System.out.println(onlineUsersList.get(i) + " tas bort");
-									onlineUsersList.remove(i);
-								}
-							}
-
-							updateUsers(onlineUsersList);
-
 						} else {
+							sui.ta_chat.append("< " + clientID + " --> " + msg.getReciever() + " > " + msg.getMsg() + "\n");
 							log.logMessage(msg, msg.getSender());
-							boolean threadIsActive = true;
-							String[] recievers = (String[]) msg.getReciever();
-							for (int i = 0; i < recievers.length; i++) {
-								for (ClientHandler ch : threads) {
-									if (ch.getClientID().equals(recievers[i])) {
-										ch.sendMessage(msg);
-										if (threadIsActive) {
-											String sentTo = "";
-											for (int j = 0; j < recievers.length; j++) {
-												sentTo += recievers[j] + ", ";
-											}
-											sui.ta_chat.append(
-													"< " + clientID + " --> " + sentTo + " > " + msg.getMsg() + "\n");
-											threadIsActive = false;
-										}
-									}
-									if (!threadIsActive) { // Den skall inte in
-															// här om
-															// meddelandet
-															// skickats iväg,
-															// men den gör det
-															// iaf. Detta skall
-															// fixa.
-										Message message = msg;
-										message.setReciver(ch.getClientID());
-										waitingMessages.addLast(message);
-										sui.ta_chat.append("< " + clientID + " !--> " + recievers[i] + " > Message: \" "
-												+ msg.getMsg() + "\"will be sent when " + recievers[i]
-												+ " is online\n");
+							boolean threadIsActive = false;
+							for (ClientHandler ch : threads) {
+								if (ch.getClientID().equals(msg.getReciever())) {
+									ch.sendMessage(msg);
+									threadIsActive = true;
+								}
+							}
+							if (!threadIsActive) {
+								for (Connect c : users) {
+									if (c.getUsername().equals(msg.getReciever())) {
+										c.addMessage(msg);
 									}
 								}
 							}
-
 						}
 					}
 
@@ -200,31 +189,6 @@ public class ServerController {
 				e.printStackTrace();
 			} catch (ClassNotFoundException e) {
 				e.printStackTrace();
-			}
-		}
-
-		public void updateUsers(ArrayList<String> list) {
-			int counter = 0;
-
-			for (int i = 0; i < list.size(); i++) {
-				if (list.get(i) != null) {
-					counter++;
-				}
-			}
-
-			String[] onlineUsersArray = new String[counter];
-
-			for (int i = 0; i < onlineUsersArray.length; i++) {
-				onlineUsersArray[i] = list.get(i);
-			}
-
-			try {
-				for (ClientHandler ch : threads) {
-					ch.oos.writeObject(onlineUsersArray);
-					ch.oos.flush();
-				}
-
-			} catch (IOException e) {
 			}
 		}
 
@@ -254,15 +218,15 @@ public class ServerController {
 		 * Denna är till för att skicka meddelanden som ligger buffrade i
 		 * connected klassen.
 		 */
-
 		public void msgWaitingForClient() {
-			while (!waitingMessages.isEmpty()) {
-				for (ClientHandler ch : threads) {
-					if (waitingMessages.getFirst().getReciever().equals(ch.getClientID())) {
-						sui.ta_chat.append("< A waiting message from: " + waitingMessages.getFirst().getSender()
-								+ " is now sent to " + ch.getClientID() + " > " + msg.getMsg() + "\n");
-						sendMessage(waitingMessages.removeFirst());
-
+			for (Connect c : users) {
+				while (!c.isEmpty()) {
+					Message msg = c.getMessage();
+					System.out.print(msg.getReciever());
+					for (ClientHandler ch : threads) {
+						if (msg.getReciever().equals(ch.getClientID()))
+							;
+						sendMessage(msg);
 					}
 
 				}
