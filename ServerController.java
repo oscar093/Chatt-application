@@ -187,7 +187,7 @@ public class ServerController {
 												lateRecievers += c.getUsername() + " ";
 												
 												sui.ta_chat.append("< " + clientID + " !--> " + c.getUsername()
-														+ " > Message: \" " + msg.getMsg() + "\"will be sent when "
+														+ " > Message: \" " + msg.getMsg() + " \" will be sent when "
 														+ c.getUsername() + " is online\n");
 											}
 										}
