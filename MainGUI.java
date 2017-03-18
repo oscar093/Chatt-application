@@ -3,9 +3,15 @@ package chatt;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.*;
 
+/**
+ * A class that represents the GUI for the clients
+ * @author Group 2
+ *
+ */
 public class MainGUI {
     private String appName = "ChattClient";
     private JFrame newFrame = new JFrame(appName);
@@ -16,6 +22,7 @@ public class MainGUI {
     private JFrame preFrame;
     private JButton connect;
     private JButton disConnect;
+    private JButton sendPicture;
     private JPanel eastPanel;
     
     private ClientController cc;
@@ -36,6 +43,9 @@ public class MainGUI {
         });
     }
 
+    /**
+     * A method for showing the first display for a client
+     */
 //    public void preDisplay() {
 //        newFrame.setVisible(false);
 //        preFrame = new JFrame(appName);
@@ -66,7 +76,10 @@ public class MainGUI {
 //    }
     
     
-
+    /**
+     * A method for showing the display for the client
+     * This is the display where the different clients communicates with each other
+     */
     public void display() {
         JPanel mainPanel = new JPanel();
         mainPanel.setLayout(new BorderLayout());
@@ -106,6 +119,15 @@ public class MainGUI {
 				cc.disconnect();
 			}
         });
+        
+        sendPicture = new JButton("Picture");
+        sendPicture.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				cc.sendPicture();
+			}
+        });
 
         chatBox = new JTextArea();
         chatBox.setEditable(false);
@@ -129,6 +151,7 @@ public class MainGUI {
 
         southPanel.add(messageBox, left);
         southPanel.add(sendMessage, right);
+        southPanel.add(sendPicture,right);
         
         northPanel.add(connect);
         northPanel.add(disConnect);  
@@ -146,7 +169,12 @@ public class MainGUI {
         newFrame.setSize(500, 400);
         newFrame.setVisible(true);
     }
-
+    
+    /**
+     * A inner class that listens if the "sendMessage" button is pressed
+     * @author Group 2
+     *
+     */
     class sendMessageButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             if (messageBox.getText().length() < 1) {
@@ -165,7 +193,12 @@ public class MainGUI {
     }
 
     String  username;
-
+    
+    /**
+     * A inner class that listens if the "connect" button is pressed
+     * @author Group 2
+     *
+     */
     class enterServerButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent event) {
             username = usernameChooser.getText();
@@ -178,37 +211,88 @@ public class MainGUI {
         }
     }
     
+    /**
+     * A inner class that listens if the "sendPicture" button is pressed
+     * @author Group 2
+     *
+     */
+    class sendPictureButtonListener implements ActionListener {
+    	public void actionPerformed(ActionEvent e){
+    		if(e.getSource()==sendPicture){
+    			cc.sendPicture();
+    		}
+    	}
+    }
+    
+    /**
+     * A method for adding a username and a message to the chat window
+     * @param username, name of the user that sent the message
+     * @param message, text that the user sent 
+     * 
+     */
     public void addToChat(String username, String message){
     	chatBox.append("<" + username + ">:  " + message + "\n");
     	messageBox.setText("");
     }
     
+    /**
+     * A method for adding a message to the chat window
+     * @param message A String containing the text that a user sent
+     * 
+     */
     public void addToChat(String message){
     	chatBox.append("<" + username + ">:  " + message + "\n");
     	messageBox.setText("");
     }
     
+    /**
+     * A method for setting a username
+     * @param username A String containing the name of the user
+     * 
+     */
     public void setUsername(String username){
     	this.username = username;
     }
     
+    /**
+     * A method for setting a ClientController
+     * @param cc the ClientController to be set
+     * 
+     */
     public void setController(ClientController cc){
     	this.cc = cc;
     }
     
+    /**
+     * A method for getting text from the text field
+     * @return a String containing text from text field
+     * 
+     */
     public String getMessageBox(){
     	return messageBox.getText();
     }
     
+    /**
+     * A method for setting a name for the client
+     * @param name A String containing the name to be set 
+     * 
+     */
     public void setClientName(String name){
     	this.newFrame.setTitle(name);
     }
     
+    /**
+     * A method for adding check-boxes
+     * @param username name for the check-box
+     */
     public void addNewUserCheckBox(String username){
     	eastPanel.add(new JCheckBox(username));
     	eastPanel.updateUI();
     }
     
+    /**
+     * A method for removing all the check-boxes in the UI
+     */
     public void removeAllCheckBoxes(){
     	eastPanel.removeAll();
     	eastPanel.updateUI();

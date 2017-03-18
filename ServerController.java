@@ -20,6 +20,11 @@ import java.util.logging.SimpleFormatter;
 
 import javax.swing.JOptionPane;
 
+/**
+ * A class for controlling the server
+ * @author Group 2
+ *
+ */
 public class ServerController {
 	private ServerSocket serverSocket;
 	private ClientListener threadClientListener;
@@ -42,7 +47,13 @@ public class ServerController {
 	private ArrayList<String> onlineUsersList = new ArrayList<String>();
 
 	private LogHandler log;
-
+	
+	/**
+	 * A constructor that initializes a ServerController object
+	 * @param port An int with the number of the port 
+	 * @throws SecurityException
+	 * @throws IOException
+	 */
 	public ServerController(int port) throws SecurityException, IOException {
 		this.port = port;
 		log = new LogHandler();
@@ -52,20 +63,33 @@ public class ServerController {
 			e.printStackTrace();
 		}
 	}
-
+	
+	/**
+	 * A method for starting the server's thread
+	 */
 	public void start() {
 		if (this.threadClientListener == null) {
 			this.threadClientListener = new ClientListener();
 			this.threadClientListener.start();
 		}
 	}
-
+	
+	/**
+	 * A method for starting the server
+	 * @param evt is not used
+	 * @throws IOException
+	 */
 	public void startServer(ActionEvent evt) throws IOException {
 		this.server = new Thread();
 		this.serverSocket = new ServerSocket(this.port);
 		this.server.start();
 	}
-
+	
+	/**
+	 * ??
+	 * @author Group 2
+	 *
+	 */
 	private class ClientListener extends Thread {
 
 		public void run() {
