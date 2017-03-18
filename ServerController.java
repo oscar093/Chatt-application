@@ -12,6 +12,7 @@ import java.net.Socket;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.logging.FileHandler;
 import java.util.logging.Logger;
@@ -29,6 +30,8 @@ public class ServerController {
 	private ArrayList<Connect> users = new ArrayList<Connect>(); //Alla användare skall sparas. 
 	private ArrayList<ClientHandler> threads = new ArrayList<ClientHandler>(); //Alla aktiva trådar. 
 	private LinkedList<Message> waitingMessages = new LinkedList<Message>();//Lagrar meddelanden som inte kommit fram
+	private String alreadySentTo = "";
+	private Message currentMessage = new Message();
 
 	private LogHandler log;
 	
@@ -77,7 +80,6 @@ public class ServerController {
 
 	private class ClientHandler extends Thread {
 		private Socket socket;
-		private Message msg;
 		private String clientID;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
@@ -113,7 +115,7 @@ public class ServerController {
 						}
 						sui.ta_chat.append(username + " has joined the chat\n");
 						log.logServerMessage(username + " has connected");
-						msgWaitingForClient(); // Denna metoden är inte färdig!
+						
 
 						Message msgToClient = new Message();
 						msgToClient.setSender("Server");
@@ -125,6 +127,7 @@ public class ServerController {
 						for (ClientHandler ch : threads) {
 							ch.sendMessage(msgToClient);
 						}
+						msgWaitingForClient();
 
 					} else if (object instanceof String) {
 						clientID = (String) object;
@@ -137,43 +140,67 @@ public class ServerController {
 
 					} else if (object instanceof Message) {
 						Message msg = (Message) object;
-						if (msg.getReciever().equals("disconnect")) {
+						if (msg.getReciever()[0].contentEquals("disconnect")) {
 							sui.ta_chat.append(clientID + " has left the chat\n");
 							log.logServerMessage(clientID + " is disconnected");
-							for (ClientHandler ch : threads) {
-								if (ch.equals(this)) {
-									threads.remove(ch);
+							
+							for(Iterator<ClientHandler> it = threads.iterator(); it.hasNext(); ) {
+								ClientHandler ch = it.next();
+								if(ch.equals(this)) {
+									it.remove();
 								}
 							}
 						} else {
-							log.logMessage(msg, msg.getSender());
-							boolean threadIsActive = true;
-							String[] recievers = (String[])msg.getReciever();
-							for(int i = 0; i < recievers.length; i++){
-							for (ClientHandler ch : threads) {								
-								if (ch.getClientID().equals(recievers[i])) {
-									ch.sendMessage(msg);
-									if(threadIsActive){
-										String sentTo = "";
-										for(int j = 0; j < recievers.length; j++){
-											sentTo += recievers[j] + ", ";
+							if (currentMessage.getID() == msg.getID() && currentMessage.isSent()) {
+								// Do nothing
+							} else {
+								currentMessage = msg;
+								log.logMessage(msg, msg.getSender());
+								String[] recievers = (String[]) msg.getReciever();
+								for (ClientHandler ch : threads) {
+									for (int i = 0; i < recievers.length; i++) {
+										if (ch.getClientID().equals(recievers[i])
+												&& !(msg.getRecievedBy(i).contentEquals(ch.getClientID()))) {
+											ch.sendMessage(msg);
+											msg.setRecievedBy(ch.getClientID());
+											String sentTo = "";
+											for (int j = 0; j < recievers.length; j++) {
+												sentTo += recievers[j] + ", ";
+											}
+											if (!alreadySentTo.equals(sentTo + msg.getMsg())) {
+												sui.ta_chat.append("< " + clientID + " --> " + sentTo + " > "
+														+ msg.getMsg() + "\n");
+
+												alreadySentTo = sentTo + msg.getMsg();
+											}
 										}
-										sui.ta_chat.append("< " + clientID + " --> " + sentTo + " > " + msg.getMsg() + "\n");
-										threadIsActive = false;
-									}	
+									}
 								}
-								if(!threadIsActive){ //Den skall inte in här om meddelandet skickats iväg, men den gör det iaf. Detta skall fixa. 
-									Message message = msg;
-									message.setReciver(ch.getClientID());
+								Message message = msg;
+								String lateRecievers = "";
+								if(!msg.allSent()){
+									for (Connect c : users) {
+										recievers = msg.getReciever();
+										for (int i = 0; i < msg.getReciever().length; i++) {
+											if(c.getUsername().contentEquals(recievers[i])){
+											if (!msg.getRecievedBy(i).contentEquals(c.getUsername())){
+												lateRecievers += c.getUsername() + " ";
+												
+												sui.ta_chat.append("< " + clientID + " !--> " + c.getUsername()
+														+ " > Message: \" " + msg.getMsg() + "\"will be sent when "
+														+ c.getUsername() + " is online\n");
+											}
+										}
+										}
+									}
+									
+								}
+									message.setReciver(lateRecievers);
 									waitingMessages.addLast(message);
-									sui.ta_chat.append("< " + clientID + " !--> " + recievers[i] + " > Message: \" " + msg.getMsg() + "\"will be sent when"+ recievers[i]+ " is online\n");
 								}
-								}
-							}
-							
+								currentMessage.setIsSent(true);
 						}
 					}
-
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -205,19 +232,28 @@ public class ServerController {
 		}
 
 		/*
-		 * Denna är till för att skicka meddelanden som ligger buffrade i
-		 * connected klassen.
+		 * Denna är till för att skicka de meddelanden som lagrats när en
+		 * användare varit offline.
 		 */
+		
+		public void msgWaitingForClient() {  
+			if (!waitingMessages.isEmpty()) {
+				for (Message m : waitingMessages) {
+					for (int i = 0; i < m.getReciever().length; i++) {
 
-		public void msgWaitingForClient(){	
-			while (!waitingMessages.isEmpty()) {
-				for (ClientHandler ch : threads) {
-					if (waitingMessages.getFirst().getReciever().equals(ch.getClientID())) {
-						sui.ta_chat.append("< A waiting message from: " + waitingMessages.getFirst().getSender() + " is now sent to " + ch.getClientID() + " > " + msg.getMsg() + "\n");
-						sendMessage(waitingMessages.removeFirst());
-						
+						if (m.getReciever()[i].contentEquals(clientID)
+						 && m.isRecievedBy(clientID)==false ) {
+							this.sendMessage(m);
+							m.setRecievedBy(clientID);
+							sui.ta_chat.append("< A waiting message: \" ID: "+ m.getID() +" \" from: " + m.getSender()
+									+ " is now sent to " + clientID + " > "
+									+ m.getMsg() + "\n");
+						}
 					}
-
+					if(m.allSent()){
+						sui.ta_chat.append("< Message: \" ID: " + m.getID() +" \" Is now recieved by all recievers > " + m.getMsg() + " \n");
+						waitingMessages.remove(m);
+					}
 				}
 			}
 		}
