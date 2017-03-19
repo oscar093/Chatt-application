@@ -6,6 +6,11 @@ import java.io.IOException;
 
 import javax.swing.*;
 
+/**
+ * A class that represents the UI for the server
+ * @author Group 2
+ *
+ */
 public class ServerUI extends JFrame {
 
 	private ServerController sc;

@@ -1,6 +1,7 @@
 package chatt;
 
 import java.awt.event.ActionEvent;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -12,6 +13,11 @@ import java.util.ArrayList;
 
 import javax.swing.JOptionPane;
 
+/**
+ * A class for controlling a client
+ * @author Group 2
+ *
+ */
 public class ClientController {
 
 	private MainGUI gui = new MainGUI();
@@ -23,7 +29,12 @@ public class ClientController {
 	private Socket socket;
 	private ObjectOutputStream oos;
 	private ObjectInputStream ois;
-
+	
+	/**
+	 * A constructor that initializes a ClientController-object
+	 * @param ip sets the IP-address of the client
+	 * @param port sets which port the client is connecting to
+	 */
 	public ClientController(String ip, int port) {
 		this.ip = ip;
 		this.port = port;
@@ -33,7 +44,11 @@ public class ClientController {
 		gui.setUsername(username);
 		gui.display();
 	}
-
+	
+	/**
+	 * A method that connects a client to the server
+	 * @param evt is not used
+	 */
 	public void connect(ActionEvent evt) {
 		if (isConnected == false) {
 			try {
@@ -53,16 +68,18 @@ public class ClientController {
 			gui.addToChat("Computer", "You are already connected.");
 		}
 	}
-
+	
+	/**
+	 * A method that disconnects a client from the server
+	 */
 	public void disconnect() {
 		if (isConnected) {
 			try {
-
 				isConnected = false;
 				gui.addToChat("Computer", "You are now diconnected.");
 				Message msg = new Message();
 				msg.setSender(username);
-				msg.setReciver("disconnect");
+				msg.setText("disconnect");
 				oos.writeObject(msg);
 				oos.flush();
 				socket.close();
@@ -74,17 +91,37 @@ public class ClientController {
 		}
 
 	}
-
+	
+	/**
+	 * Inner class with the client's thread that listens to incoming objects
+	 * @author Group 2
+	 *
+	 */
 	private class Listener extends Thread {
 		public void run() {
 			try {
 				while (true) {
 					Object obj = ois.readObject();
-					Message msg = (Message) obj;
-					gui.addToChat(msg.getSender(), msg.getMsg());
-					if (msg.getPicture() != null) {
-						JOptionPane.showMessageDialog(null, "Bild skickad från " + msg.getSender());
-						JOptionPane.showMessageDialog(null, msg.getPicture());
+					if (obj instanceof Message) {
+						Message msg = (Message) obj;
+						if (!msg.getMsg().isEmpty()) {
+							gui.addToChat(msg.getSender(), msg.getMsg());
+						}
+						if (msg.getPicture() != null) {
+							JOptionPane.showMessageDialog(null, "Bild skickad från " + msg.getSender());
+							JOptionPane.showMessageDialog(null, msg.getPicture());
+						}
+					}
+					if (obj instanceof String[]) {
+						String[] temp = (String[]) obj;
+						String[] onlineUsers = new String[temp.length];
+						for(int i = 0; i < onlineUsers.length; i++){
+							onlineUsers[i] = temp[i];
+						}
+						gui.removeAllCheckBoxes();
+						for (int i = 0; i < onlineUsers.length; i++) {
+							gui.addNewUserCheckBox(onlineUsers[i]);
+						}
 					}
 				}
 			} catch (Exception e) {
@@ -95,16 +132,19 @@ public class ClientController {
 			}
 		}
 	}
-
+	
+	/**
+	 *  A method for sending a message from a client to the server
+	 */
 	public void sendChatMessage() {
 		if (isConnected == true) {
 			try {
 				Message message = new Message();
 				String reciever = JOptionPane.showInputDialog("Skriv in mottagare");
-				message.setReciver(reciever);
+				message.setReciever(reciever);
 				message.setSender(username);
 				message.setText(gui.getMessageBox());
-				message.setPicture();
+//				message.setPicture();
 				this.oos.writeObject(message);
 				this.oos.flush();
 			} catch (IOException e) {
@@ -112,6 +152,26 @@ public class ClientController {
 			}
 		} else {
 			gui.addToChat("Computer", "Cannot Connect! Press Connect!");
+		}
+	}
+	
+	/**
+	 *  A method for sending a picture from a client to the server
+	 */
+	public void sendPicture(){
+		if(isConnected == true){
+			try{
+				Message message = new Message();
+				String reciever = JOptionPane.showInputDialog("Skriv in mottagare");
+				message.setReciever(reciever);
+				message.setSender(username);
+				message.setText(gui.getMessageBox());
+				message.setPicture();
+				this.oos.writeObject(message);
+				this.oos.flush();
+			} catch(IOException e){
+				e.printStackTrace();
+			}
 		}
 	}
 }

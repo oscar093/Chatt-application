@@ -14,6 +14,12 @@ import java.util.Random;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 
+/**
+ * A class that contains all the necessary information for the messages 
+ * that is sent between the clients
+ * @author Group 2
+ *
+ */
 public class Message implements Serializable {
 	private ImageIcon picture;
 	private String text;
@@ -23,6 +29,10 @@ public class Message implements Serializable {
 	private boolean isSent = false;
 
 	private Random rand = new Random();
+	
+	/**
+	 * Empty constructor for initializing a Message object
+	 */
 
 	public Message() {
 		id = rand.nextInt(10000);
@@ -43,33 +53,54 @@ public class Message implements Serializable {
 	public void generateNewID() {
 		this.id = rand.nextInt(10000);
 	}
-
-	public void setText(String text) {
+	
+	/**
+	 * A method for setting the text of a message
+	 * @param text A String containing the text to be set
+	 */
+	public void setText(String text){
 		this.text = text;
 	}
-
-	public String getMsg() {
+	
+	/**
+	 * A method for getting the text of a message
+	 * @return A String with the text in the message
+	 */
+	public String getMsg(){
 		return this.text;
 	}
-
-	public ImageIcon getPicture() {
+	
+	/**
+	 * A method for getting a picture from a message
+	 * @return A ImageIcon from the message
+	 */
+	public ImageIcon getPicture(){
 		return picture;
 	}
-
-	public void inputMessage(Object o) {
-		text = (String) o;
+	
+	/**
+	 * A method for converting an object to a String
+	 * @param o the object to be converted
+	 */
+	public void inputMessage(Object o){
+		text = (String)o;
 	}
-
-	private void inputText() {
-		text = JOptionPane.showInputDialog("Skriv meddelande");
-	}
-
-	public void setPicture() {
+	
+	/**
+	 * A method for creating & initialize a new instance of the class SelectPicture
+	 */
+	public void setPicture(){
 		new SelectPicture();
 	}
-
-	private class SelectPicture {
-		public SelectPicture() {
+	
+	/**
+	 * An inner class for making the client select a picture from its hard drive 
+	 * to be sent in a message
+	 * @author Group 2
+	 *
+	 */
+	private class SelectPicture{
+		public SelectPicture(){
 			FileNameExtensionFilter filter = new FileNameExtensionFilter("jpg", "png", "gif");
 			JFileChooser filechooser = new JFileChooser();
 			filechooser.setFileFilter(filter);
@@ -107,6 +138,7 @@ public class Message implements Serializable {
 		return bool;
 	}
 
+
 	public boolean recievedListIsEmpty() {
 		return recievedList.isEmpty();
 	}
@@ -123,7 +155,11 @@ public class Message implements Serializable {
 		recievedList.add(recievedBy);
 	}
 
-	public void setReciver(String recievers) {
+	/**
+	 * A method for setting which client the message should be sent to
+	 * @param reciever A string containing the name of the client
+	 */
+	public void setReciever(String recievers){
 		this.recievers = recievers;
 	}
 
@@ -148,6 +184,10 @@ public class Message implements Serializable {
 		return recievedList.size();
 	}
 
+	/**
+	 * A method for getting which client the message should be sent to
+	 * @return A String containing the name of the client
+	 */
 	public String[] getReciever() {
 		String[] reciever = { "" };
 		if (recievers != null) {
@@ -158,12 +198,20 @@ public class Message implements Serializable {
 		}
 
 	}
-
-	public void setSender(String sender) {
+	
+	/**
+	 * A method for setting which client is sending the message
+	 * @param sender A String containing the name of the sender
+	 */
+	public void setSender(String sender){
 		this.sender = sender;
 	}
-
-	public String getSender() {
+	
+	/**
+	 * A method for getting which client the message was sent from 
+	 * @return A String containing the name of the sender
+	 */
+	public String getSender(){
 		return this.sender;
 	}
 
