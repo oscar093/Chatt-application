@@ -209,27 +209,26 @@ public class ServerController {
 								}
 								Message message = msg;
 								String lateRecievers = "";
-								if(!msg.allSent()){
+								if (!msg.allSent()) {
 									for (Connect c : users) {
-										recievers = msg.getReciever();
 										for (int i = 0; i < msg.getReciever().length; i++) {
-											if(c.getUsername().contentEquals(recievers[i])){
-											if (!msg.getRecievedBy(i).contentEquals(c.getUsername())){
-												lateRecievers += c.getUsername() + " ";
-												
-												sui.ta_chat.append("< " + clientID + " !--> " + c.getUsername()
-														+ " > Message: \" " + msg.getMsg() + " \" will be sent when "
-														+ c.getUsername() + " is online\n");
+											if (c.getUsername().contentEquals(recievers[i])) {
+												if(!msg.isRecievedBy(c.getUsername())){
+													lateRecievers += c.getUsername() + " ";
+
+													sui.ta_chat.append("< " + clientID + " !--> " + c.getUsername()
+															+ " > Message: \" " + msg.getMsg()
+															+ " \" will be sent when " + c.getUsername()
+															+ " is online\n");
+												}
 											}
 										}
-										}
 									}
-									
 								}
-									message.setReciever(lateRecievers);
-									waitingMessages.addLast(message);
-								}
-								currentMessage.setIsSent(true);
+								message.setReciever(lateRecievers);
+								waitingMessages.addLast(message);
+							}
+							currentMessage.setIsSent(true);
 						}
 					}
 				}
