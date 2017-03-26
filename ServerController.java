@@ -79,7 +79,7 @@ public class ServerController {
 	}
 	
 	/**
-	 * ??
+	 * Listener for connecting clients. 
 	 * @author Group 2
 	 *
 	 */
@@ -148,6 +148,17 @@ public class ServerController {
 						for (ClientHandler ch : threads) {
 							onlineUsersList.add(ch.getClientID());
 						}
+						for(Connect c : users){
+							boolean isOnline = false;
+							for(ClientHandler ch : threads){
+								if(c.getUsername().contentEquals(ch.getClientID())){
+									isOnline = true;
+								}
+							}
+							if(!isOnline){
+								onlineUsersList.add("<" + c.getUsername() + ">");
+							}	
+						}
 						msgWaitingForClient();
 
 						updateUsers(onlineUsersList);
@@ -163,7 +174,7 @@ public class ServerController {
 
 					} else if (object instanceof Message) {
 						Message msg = (Message) object;
-						if (msg.getReciever()[0].contentEquals("disconnect")) {
+						if (msg.getMsg().contentEquals("disconnect")) {
 							sui.ta_chat.append(clientID + " has left the chat\n");
 							log.logServerMessage(clientID + " is disconnected");
 							
@@ -177,6 +188,17 @@ public class ServerController {
 
 							for (ClientHandler ch : threads) {
 								onlineUsersList.add(ch.clientID);
+							}
+							for(Connect c : users){
+								boolean isOnline = false;
+								for(ClientHandler ch : threads){
+									if(c.getUsername().contentEquals(ch.getClientID())){
+										isOnline = true;
+									}
+								}
+								if(!isOnline){
+									onlineUsersList.add("<" + c.getUsername() + ">");
+								}	
 							}
 							
 							updateUsers(onlineUsersList);

@@ -24,6 +24,7 @@ public class MainGUI {
     private JButton disConnect;
     private JButton sendPicture;
     private JPanel eastPanel;
+    private ArrayList<JCheckBox> CBList = new ArrayList<JCheckBox>();
     
     private ClientController cc;
 
@@ -38,42 +39,9 @@ public class MainGUI {
                     e.printStackTrace();
                 }
                 MainGUI mainGUI = new MainGUI();
-//                mainGUI.preDisplay();
             }
         });
     }
-
-    /**
-     * A method for showing the first display for a client
-     */
-//    public void preDisplay() {
-//        newFrame.setVisible(false);
-//        preFrame = new JFrame(appName);
-//        preFrame.setSize(800,600);
-//        usernameChooser = new JTextField(15);
-//        JLabel chooseUsernameLabel = new JLabel("Pick a username:");
-//        JButton enterServer = new JButton("Enter Chat Server");
-//        enterServer.addActionListener(new enterServerButtonListener());
-//        JPanel prePanel = new JPanel(new GridBagLayout());
-//
-//        GridBagConstraints preRight = new GridBagConstraints();
-//        preRight.insets = new Insets(0, 0, 0, 10);
-//        preRight.anchor = GridBagConstraints.EAST;
-//        GridBagConstraints preLeft = new GridBagConstraints();
-//        preLeft.anchor = GridBagConstraints.WEST;
-//        preLeft.insets = new Insets(0, 10, 0, 10);
-//        // preRight.weightx = 2.0;
-//        preRight.fill = GridBagConstraints.HORIZONTAL;
-//        preRight.gridwidth = GridBagConstraints.REMAINDER;
-//
-//        prePanel.add(chooseUsernameLabel, preLeft);
-//        prePanel.add(usernameChooser, preRight);
-//        preFrame.add(BorderLayout.CENTER, prePanel);
-//        preFrame.add(BorderLayout.SOUTH, enterServer);
-//        preFrame.setSize(300, 300);
-//        preFrame.setVisible(true);
-//
-//    }
     
     
     /**
@@ -154,10 +122,7 @@ public class MainGUI {
         southPanel.add(sendPicture,right);
         
         northPanel.add(connect);
-        northPanel.add(disConnect);  
-        
-//        eastPanel.add(new JCheckBox("USSER"));
-//        eastPanel.add(new JCheckBox("SURREX"));  
+        northPanel.add(disConnect);    
 
         mainPanel.add(BorderLayout.SOUTH, southPanel);
         mainPanel.add(BorderLayout.NORTH, northPanel);
@@ -224,6 +189,25 @@ public class MainGUI {
     	}
     }
     
+	/**
+	 * Reads wish CheckBoxes are selected and returns a string with the recievers. 
+	 * @return String recievers
+	 */
+	public String getRecievers() {
+		String recievers = "";
+		for (JCheckBox cb : CBList) {
+			if(cb.isSelected()){
+				if(cb.getText().endsWith(">")){
+					recievers += cb.getText().substring(1, cb.getText().length()-1) + " ";
+				}else{
+					recievers += cb.getText() + " ";
+				}
+			}	
+		}
+		return recievers;
+
+	}
+    
     /**
      * A method for adding a username and a message to the chat window
      * @param username, name of the user that sent the message
@@ -286,7 +270,9 @@ public class MainGUI {
      * @param username name for the check-box
      */
     public void addNewUserCheckBox(String username){
-    	eastPanel.add(new JCheckBox(username));
+    	JCheckBox onlineCB = new JCheckBox(username); 
+    	CBList.add(onlineCB);
+    	eastPanel.add(onlineCB);
     	eastPanel.updateUI();
     }
     
@@ -294,6 +280,7 @@ public class MainGUI {
      * A method for removing all the check-boxes in the UI
      */
     public void removeAllCheckBoxes(){
+    	CBList.clear();
     	eastPanel.removeAll();
     	eastPanel.updateUI();
     }

@@ -79,7 +79,8 @@ public class ClientController {
 				gui.addToChat("Computer", "You are now diconnected.");
 				Message msg = new Message();
 				msg.setSender(username);
-				msg.setReciever("disconnect");
+//				msg.setReciever("disconnect");
+				msg.setText("disconnect");
 				oos.writeObject(msg);
 				oos.flush();
 				socket.close();
@@ -93,7 +94,7 @@ public class ClientController {
 	}
 	
 	/**
-	 * Inner class with the client's thread that listens to incoming objects
+	 * Inner class with the client's thread that listens for incoming objects
 	 * @author Group 2
 	 *
 	 */
@@ -140,11 +141,10 @@ public class ClientController {
 		if (isConnected == true) {
 			try {
 				Message message = new Message();
-				String reciever = JOptionPane.showInputDialog("Skriv in mottagare");
+				String reciever = this.gui.getRecievers();
 				message.setReciever(reciever);
 				message.setSender(username);
 				message.setText(gui.getMessageBox());
-//				message.setPicture();
 				this.oos.writeObject(message);
 				this.oos.flush();
 			} catch (IOException e) {
@@ -162,7 +162,7 @@ public class ClientController {
 		if(isConnected == true){
 			try{
 				Message message = new Message();
-				String reciever = JOptionPane.showInputDialog("Skriv in mottagare");
+				String reciever = this.gui.getRecievers();
 				message.setReciever(reciever);
 				message.setSender(username);
 				message.setText(gui.getMessageBox());

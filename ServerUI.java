@@ -43,6 +43,7 @@ public class ServerUI extends JFrame {
 		ta_chat.setColumns(20);
 		ta_chat.setRows(5);
 		jScrollPane1.setViewportView(ta_chat);
+		
 
 		b_start.setText("START");
 		b_start.addActionListener(new ActionListener() {

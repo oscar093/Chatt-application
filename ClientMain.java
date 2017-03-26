@@ -16,11 +16,11 @@ public class ClientMain {
 				ClientController cc3 = new ClientController("127.0.0.1", 3450);
 				ClientController cc4 = new ClientController("127.0.0.1", 3450);
 				ClientController cc5 = new ClientController("127.0.0.1", 3450);
-				ClientController cc6 = new ClientController("127.0.0.1", 3450);
-				ClientController cc7 = new ClientController("127.0.0.1", 3450);
-				ClientController cc8 = new ClientController("127.0.0.1", 3450);
-				ClientController cc9 = new ClientController("127.0.0.1", 3450);
-				ClientController cc10 = new ClientController("127.0.0.1", 3450);
+//				ClientController cc6 = new ClientController("127.0.0.1", 3450);
+//				ClientController cc7 = new ClientController("127.0.0.1", 3450);
+//				ClientController cc8 = new ClientController("127.0.0.1", 3450);
+//				ClientController cc9 = new ClientController("127.0.0.1", 3450);
+//				ClientController cc10 = new ClientController("127.0.0.1", 3450);
 //				ClientController cc11 = new ClientController("127.0.0.1", 3450);
 //				ClientController cc12 = new ClientController("127.0.0.1", 3450);
 //				ClientController cc13 = new ClientController("127.0.0.1", 3450);
