@@ -38,18 +38,33 @@ public class Message implements Serializable {
 		id = rand.nextInt(10000);
 	}
 
+	/**
+	 * Determines weather message is sent or not.
+	 * @return
+	 */
 	public boolean isSent() {
 		return isSent;
 	}
 
+	/**
+	 * Set if message is sent.
+	 * @param bool
+	 */
 	public void setIsSent(boolean bool) {
 		isSent = bool;
 	}
 
+	/**
+	 * Returns message ID
+	 * @return
+	 */
 	public int getID() {
 		return id;
 	}
 
+	/**
+	 * Generates a hopefully unique ID for the message.
+	 */
 	public void generateNewID() {
 		this.id = rand.nextInt(10000);
 	}
@@ -118,6 +133,11 @@ public class Message implements Serializable {
 		}
 	}
 
+	/**
+	 * Returns if message is recieved by a user.
+	 * @param element in array.
+	 * @return name of user.
+	 */
 	public String getRecievedBy(int element) {
 		if (recievedList.size() > element) {
 			return recievedList.get(element);
@@ -127,6 +147,11 @@ public class Message implements Serializable {
 		}
 	}
 
+	/**
+	 * Returns wheather or not the message is recieved by a user.
+	 * @param username of reciever
+	 * @return true if recieved
+	 */
 	public boolean isRecievedBy(String username) {
 		boolean bool = false;
 		for (String strRec : recievedList) {
@@ -139,6 +164,10 @@ public class Message implements Serializable {
 	}
 
 
+	/**
+	 * Determin if anyone has got the message.
+	 * @return
+	 */
 	public boolean recievedListIsEmpty() {
 		return recievedList.isEmpty();
 	}
@@ -151,6 +180,10 @@ public class Message implements Serializable {
 		}
 	}
 
+	/**
+	 * Set who have received message.
+	 * @param recievedBy
+	 */
 	public void setRecievedBy(String recievedBy) {
 		recievedList.add(recievedBy);
 	}
@@ -163,6 +196,10 @@ public class Message implements Serializable {
 		this.recievers = recievers;
 	}
 
+	/**
+	 * Determines if message is sent to all recievers.
+	 * @return true if message is sent to all receivers.
+	 */
 	public boolean allSent() {
 		int allSent = 0;
 		for (String rec : getReciever()) {

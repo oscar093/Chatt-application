@@ -79,7 +79,6 @@ public class ClientController {
 				gui.addToChat("Computer", "You are now diconnected.");
 				Message msg = new Message();
 				msg.setSender(username);
-//				msg.setReciever("disconnect");
 				msg.setText("disconnect");
 				oos.writeObject(msg);
 				oos.flush();

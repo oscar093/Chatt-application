@@ -103,17 +103,28 @@ public class ServerController {
 		}
 	}
 
+	/**
+	 * 
+	 * Class is thread that controls input and output for Clients.
+	 *
+	 */
 	private class ClientHandler extends Thread {
 		private Socket socket;
 		private String clientID;
 		private ObjectOutputStream oos;
 		private ObjectInputStream ois;
-//		private ArrayList<String> onlineUsersList = new ArrayList<String>();
 
+		/**
+		 * Constructor for Clienthandler
+		 * @param socket is the Clients socket.
+		 */
 		public ClientHandler(Socket socket) {
 			this.socket = socket;
 		}
 
+		/**
+		 * Method takes care of incoming and outgoing streams for clients.
+		 */
 		public void run() {
 			try {
 				oos = new ObjectOutputStream(new BufferedOutputStream(socket.getOutputStream()));
@@ -175,33 +186,7 @@ public class ServerController {
 					} else if (object instanceof Message) {
 						Message msg = (Message) object;
 						if (msg.getMsg().contentEquals("disconnect")) {
-							sui.ta_chat.append(clientID + " has left the chat\n");
-							log.logServerMessage(clientID + " is disconnected");
-							
-							for(Iterator<ClientHandler> it = threads.iterator(); it.hasNext(); ) {
-								ClientHandler ch = it.next();
-								if(ch.equals(this)) {
-									it.remove();
-								}
-							}
-							onlineUsersList.removeAll(onlineUsersList);
-
-							for (ClientHandler ch : threads) {
-								onlineUsersList.add(ch.clientID);
-							}
-							for(Connect c : users){
-								boolean isOnline = false;
-								for(ClientHandler ch : threads){
-									if(c.getUsername().contentEquals(ch.getClientID())){
-										isOnline = true;
-									}
-								}
-								if(!isOnline){
-									onlineUsersList.add("<" + c.getUsername() + ">");
-								}	
-							}
-							
-							updateUsers(onlineUsersList);
+							disconnectUser();
 
 						} else {
 							if (currentMessage.getID() == msg.getID() && currentMessage.isSent()) {
@@ -261,6 +246,10 @@ public class ServerController {
 			}
 		}
 
+		/**
+		 * Send a list to Clients with information about all online and offline users.
+		 * @param list
+		 */
 		public void updateUsers(ArrayList<String> list) {
 			int counter = 0;
 
@@ -285,19 +274,18 @@ public class ServerController {
 			}
 		}
 
+		/**
+		 * Returns clientID for current thread.
+		 * @return
+		 */
 		public String getClientID() {
 			return this.clientID;
 		}
 
-		public void sendMessage(String message) {
-			try {
-				oos.writeObject(message);
-				oos.flush();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-
+		/**
+		 * Sends message to client.
+		 * @param message
+		 */
 		public void sendMessage(Message msg) {
 			try {
 				oos.writeObject(msg);
@@ -307,9 +295,8 @@ public class ServerController {
 			}
 		}
 
-		/*
-		 * Denna är till för att skicka de meddelanden som lagrats när en
-		 * användare varit offline.
+		/**
+		 * Sends message to client who where offline when message was sent. 
 		 */
 		public void msgWaitingForClient() {  
 			if (!waitingMessages.isEmpty()) {
@@ -330,6 +317,39 @@ public class ServerController {
 					}
 				}
 			}
+		}
+		
+		/**
+		 * Disconnects current thread.
+		 */
+		public void disconnectUser(){
+			sui.ta_chat.append(clientID + " has left the chat\n");
+			log.logServerMessage(clientID + " is disconnected");
+			
+			for(Iterator<ClientHandler> it = threads.iterator(); it.hasNext(); ) {
+				ClientHandler ch = it.next();
+				if(ch.equals(this)) {
+					it.remove();
+				}
+			}
+			onlineUsersList.removeAll(onlineUsersList);
+
+			for (ClientHandler ch : threads) {
+				onlineUsersList.add(ch.clientID);
+			}
+			for(Connect c : users){
+				boolean isOnline = false;
+				for(ClientHandler ch : threads){
+					if(c.getUsername().contentEquals(ch.getClientID())){
+						isOnline = true;
+					}
+				}
+				if(!isOnline){
+					onlineUsersList.add("<" + c.getUsername() + ">");
+				}	
+			}
+			
+			updateUsers(onlineUsersList);
 		}
 	}
 }
