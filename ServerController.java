@@ -9,18 +9,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.logging.FileHandler;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
-
-import javax.swing.JOptionPane;
-
 /**
  * A class for controlling the server
  * @author Group 2
@@ -34,9 +24,6 @@ public class ServerController {
 	private ServerUI sui = new ServerUI(this);
 
 	private ArrayList<Connect> users = new ArrayList<Connect>();
-	private HashMap<String, ArrayList<Message>> waitingMessagesMap = new HashMap<String, ArrayList<Message>>();
-	private String alreadySentTo = "";
-	private Message currentMessage = new Message();
 	private ArrayList<String> onlineUsersList = new ArrayList<String>();
 	private HashMap<String, ClientHandler> threadMap = new HashMap<String, ClientHandler>();
 	
