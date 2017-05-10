@@ -77,7 +77,8 @@ public class ServerController {
 	private class ClientListener extends Thread {
 
 		public void run() {
-			sui.ta_chat.append("Server igång på port: " + serverSocket.getLocalPort() + "\n");
+//			sui.ta_chat.append("Server igång på port: " + serverSocket.getLocalPort() + "\n");
+			sui.setUIText("Server ig�ng p� port: " + serverSocket.getLocalPort() + "\n");
 			log.logServerMessage("Server started");
 
 			while (true) {
@@ -143,7 +144,7 @@ public class ServerController {
 							Connect con = (Connect) object;
 							users.add(con);
 						}
-						sui.ta_chat.append(username + " has joined the chat\n");
+						sui.setUIText(username + " has joined the chat\n");
 						log.logServerMessage(username + " has connected");
 						if(onlineUsersList.size() > 0){
 							onlineUsersList.removeAll(onlineUsersList);
@@ -186,16 +187,12 @@ public class ServerController {
 							for (String theReciever : recievers) {
 								if (threadMap.containsKey(theReciever)) {
 									threadMap.get(theReciever).sendMessage(msg);
-									sui.ta_chat
-											.append("< " + clientID + " --> " + theReciever + " > " + msg.getMsg() + "\n");
+									sui.setUIText("< " + clientID + " --> " + theReciever + " > " + msg.getMsg() + "\n");
 								} else {
 
 									if (msgBuffer.containsUser(theReciever)) {
-
 										msgBuffer.addMessage(theReciever, msg);
-
-										sui.ta_chat.append("< " + clientID + " !--> " + theReciever + " > Message: \" "
-												+ msg.getMsg() + " \" will be sent when " + theReciever + " is online\n");
+										sui.setUIText("< " + clientID + " !--> " + theReciever + " > Message: \" " + msg.getMsg() + " \" will be sent when " + theReciever + " is online\n");
 									} else {
 										System.out.println("Mottagare: " + theReciever + " finns inte....");
 									}
@@ -265,8 +262,7 @@ public class ServerController {
 				for(Message msg : msgBuffer.getMessages(clientID)){
 					if(msg != null){
 						sendMessage(msg);
-						sui.ta_chat
-						.append("< Buffered Message from " + msg.getSender() + " --> " + clientID + " is now sent. > " 
+						sui.setUIText("< Buffered Message from " + msg.getSender() + " --> " + clientID + " is now sent. > " 
 						+ msg.getMsg() + "\n");
 						
 						msgBuffer.removeMsg(clientID, msg);
@@ -279,7 +275,7 @@ public class ServerController {
 		 * Disconnects current thread.
 		 */
 		public void disconnectUser(String username){
-			sui.ta_chat.append(username + " has left the chat\n");
+			sui.setUIText(username + " has left the chat\n");
 			log.logServerMessage(username + " is disconnected");
 			
 			threadMap.remove(username);

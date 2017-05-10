@@ -15,11 +15,10 @@ import javax.swing.*;
 public class ServerUI extends JFrame {
 
 	private ServerController sc;
-
-	protected JButton b_start;
-	protected JScrollPane jScrollPane1;
-	protected JLabel lb_name;
-	protected JTextArea ta_chat;
+	private JButton b_start;
+	private JScrollPane jScrollPane1;
+	private JLabel lb_name;
+	private JTextArea ta_chat;
 
 	/**
 	 * Constructor and graphical components for the UI.
@@ -80,5 +79,9 @@ public class ServerUI extends JFrame {
 				.addGap(18, 18, 18).addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE))
 				.addGap(4, 4, 4).addComponent(lb_name)));
 		pack();
+	}
+	
+	public void setUIText(String txt){
+		ta_chat.append(txt);
 	}
 }
