@@ -24,49 +24,12 @@ public class Message implements Serializable {
 	private ImageIcon picture;
 	private String text;
 	private String recievers, sender;
-	private ArrayList<String> recievedList = new ArrayList<String>();
-	private int id;
-	private boolean isSent = false;
-
-	private Random rand = new Random();
 	
 	/**
 	 * Empty constructor for initializing a Message object
 	 */
 
 	public Message() {
-		id = rand.nextInt(10000);
-	}
-
-	/**
-	 * Determines weather message is sent or not.
-	 * @return
-	 */
-	public boolean isSent() {
-		return isSent;
-	}
-
-	/**
-	 * Set if message is sent.
-	 * @param bool
-	 */
-	public void setIsSent(boolean bool) {
-		isSent = bool;
-	}
-
-	/**
-	 * Returns message ID
-	 * @return
-	 */
-	public int getID() {
-		return id;
-	}
-
-	/**
-	 * Generates a hopefully unique ID for the message.
-	 */
-	public void generateNewID() {
-		this.id = rand.nextInt(10000);
 	}
 	
 	/**
@@ -134,91 +97,11 @@ public class Message implements Serializable {
 	}
 
 	/**
-	 * Returns if message is recieved by a user.
-	 * @param element in array.
-	 * @return name of user.
-	 */
-	public String getRecievedBy(int element) {
-		if (recievedList.size() > element) {
-			return recievedList.get(element);
-		} else {
-			return "NoOneShouldHaveAIDLikeThisOne"; // Kan inte skicka null så
-													// måste göra såhar.
-		}
-	}
-
-	/**
-	 * Returns wheather or not the message is recieved by a user.
-	 * @param username of reciever
-	 * @return true if recieved
-	 */
-	public boolean isRecievedBy(String username) {
-		boolean bool = false;
-		for (String strRec : recievedList) {
-			if (strRec.contentEquals(username)) {
-				bool = true;
-			}
-		}
-
-		return bool;
-	}
-
-
-	/**
-	 * Determin if anyone has got the message.
-	 * @return
-	 */
-	public boolean recievedListIsEmpty() {
-		return recievedList.isEmpty();
-	}
-
-	public void removeRecievedBy(String recievedBy) {
-		for (int i = 0; i < recievedList.size(); i++) {
-			if (recievedList.get(i).contentEquals(recievedBy)) {
-				recievedList.remove(i);
-			}
-		}
-	}
-
-	/**
-	 * Set who have received message.
-	 * @param recievedBy
-	 */
-	public void setRecievedBy(String recievedBy) {
-		recievedList.add(recievedBy);
-	}
-
-	/**
 	 * A method for setting which client the message should be sent to
 	 * @param reciever A string containing the name of the client
 	 */
 	public void setReciever(String recievers){
 		this.recievers = recievers;
-	}
-
-	/**
-	 * Determines if message is sent to all recievers.
-	 * @return true if message is sent to all receivers.
-	 */
-	public boolean allSent() {
-		int allSent = 0;
-		for (String rec : getReciever()) {
-			for (String recBy : recievedList) {
-				if (rec.contentEquals(recBy)) {
-					allSent += 1;
-				}
-			}
-		}
-		if (allSent >= getReciever().length) {
-			return true;
-		} else {
-			return false;
-		}
-
-	}
-
-	public int getRecievedByListSize() {
-		return recievedList.size();
 	}
 
 	/**
@@ -250,9 +133,5 @@ public class Message implements Serializable {
 	 */
 	public String getSender(){
 		return this.sender;
-	}
-
-	public static void main(String[] args) {
-		Message msg = new Message();
 	}
 }

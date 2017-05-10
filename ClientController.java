@@ -76,13 +76,13 @@ public class ClientController {
 		if (isConnected) {
 			try {
 				isConnected = false;
-				gui.addToChat("Computer", "You are now diconnected.");
 				Message msg = new Message();
 				msg.setSender(username);
 				msg.setText("disconnect");
 				oos.writeObject(msg);
 				oos.flush();
 				socket.close();
+				gui.addToChat("Computer", "You are now diconnected.");
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
