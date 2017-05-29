@@ -23,9 +23,10 @@ public class ServerController {
 	private int port;
 	private ServerUI sui = new ServerUI(this);
 
-	private ArrayList<Connect> users = new ArrayList<Connect>();
+//	private ArrayList<Connect> users = new ArrayList<Connect>();
 	private ArrayList<String> onlineUsersList = new ArrayList<String>();
 	private Threads threads = new Threads();
+	private Users users = new Users();
 	
 	private MessageBuffer msgBuffer;
 
@@ -134,14 +135,14 @@ public class ServerController {
 
 						
 						boolean alreadyAUser = false;
-						for (Connect usrs : users) {
+						for (Connect usrs : users.getUsers()) {
 							if (clientID.equals(usrs.getUsername())) {
 								alreadyAUser = true;
 							}
 						}
 						if (!alreadyAUser) {
 							Connect con = (Connect) object;
-							users.add(con);
+							users.addUser(con);
 						}
 						sui.setUIText(username + " has joined the chat\n");
 						log.logServerMessage(username + " has connected");
@@ -151,7 +152,7 @@ public class ServerController {
 						for(String key : threads.getKeySet()){
 							onlineUsersList.add(threads.getClientHandler(key).getClientID());
 						}
-						for (Connect c : users) {
+						for (Connect c : users.getUsers()) {
 							boolean isOnline = false;
 							for (String key : threads.getKeySet()) {
 								if (c.getUsername().contentEquals(key)) {
@@ -169,10 +170,10 @@ public class ServerController {
 
 					} else if (object instanceof String) {
 						clientID = (String) object;
-						for (Connect usrs : users) {
+						for (Connect usrs : users.getUsers()) {
 							if (!clientID.equals(usrs.getUsername())) {
 								Connect connect = new Connect(clientID);
-								users.add(connect);
+								users.addUser(connect);
 							}
 						}
 
@@ -282,7 +283,7 @@ public class ServerController {
 			for (String key : threads.getKeySet()) {
 				onlineUsersList.add(key);
 			}
-			for(Connect c : users){
+			for(Connect c : users.getUsers()){
 				boolean isOnline = false;
 				for(String key : threads.getKeySet()){
 					if(c.getUsername().contentEquals(key)){
