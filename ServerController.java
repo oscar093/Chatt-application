@@ -22,8 +22,6 @@ public class ServerController {
 	private Thread server;
 	private int port;
 	private ServerUI sui = new ServerUI(this);
-
-//	private ArrayList<Connect> users = new ArrayList<Connect>();
 	private ArrayList<String> onlineUsersList = new ArrayList<String>();
 	private Threads threads = new Threads();
 	private Users users = new Users();
