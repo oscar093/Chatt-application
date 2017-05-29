@@ -25,7 +25,7 @@ public class ServerController {
 
 	private ArrayList<Connect> users = new ArrayList<Connect>();
 	private ArrayList<String> onlineUsersList = new ArrayList<String>();
-	private HashMap<String, ClientHandler> threadMap = new HashMap<String, ClientHandler>();
+	private Threads threads = new Threads();
 	
 	private MessageBuffer msgBuffer;
 
@@ -77,8 +77,7 @@ public class ServerController {
 	private class ClientListener extends Thread {
 
 		public void run() {
-//			sui.ta_chat.append("Server igång på port: " + serverSocket.getLocalPort() + "\n");
-			sui.setUIText("Server ig�ng p� port: " + serverSocket.getLocalPort() + "\n");
+			sui.setUIText("Server igång på port: " + serverSocket.getLocalPort() + "\n");
 			log.logServerMessage("Server started");
 
 			while (true) {
@@ -99,7 +98,6 @@ public class ServerController {
 	 * Class is thread that controls input and output for Clients.
 	 *
 	 */
-//	private class ClientHandler extends Thread {
 	public class ClientHandler extends Thread {
 		private Socket socket;
 		private String clientID;
@@ -130,7 +128,8 @@ public class ServerController {
 						String username;
 						username = ((Connect) object).getUsername();
 						this.clientID = username;
-						threadMap.put(username, this);
+						threads.addThread(username, this);
+						
 						msgBuffer.addUser(username);
 
 						
@@ -149,12 +148,12 @@ public class ServerController {
 						if(onlineUsersList.size() > 0){
 							onlineUsersList.removeAll(onlineUsersList);
 						}						
-						for(String key : threadMap.keySet()){
-							onlineUsersList.add(threadMap.get(key).getClientID());
+						for(String key : threads.getKeySet()){
+							onlineUsersList.add(threads.getClientHandler(key).getClientID());
 						}
 						for (Connect c : users) {
 							boolean isOnline = false;
-							for (String key : threadMap.keySet()) {
+							for (String key : threads.getKeySet()) {
 								if (c.getUsername().contentEquals(key)) {
 									isOnline = true;
 								}
@@ -185,8 +184,8 @@ public class ServerController {
 						} else {
 							
 							for (String theReciever : recievers) {
-								if (threadMap.containsKey(theReciever)) {
-									threadMap.get(theReciever).sendMessage(msg);
+								if (threads.containsKey(theReciever)) {
+									threads.getClientHandler(theReciever).sendMessage(msg);
 									sui.setUIText("< " + clientID + " --> " + theReciever + " > " + msg.getMsg() + "\n");
 								} else {
 
@@ -224,9 +223,9 @@ public class ServerController {
 				onlineUsersArray[i] = list.get(i);
 			}
 			try {
-				for (String key : threadMap.keySet()) {
-					threadMap.get(key).oos.writeObject(onlineUsersArray);
-					threadMap.get(key).oos.flush();
+				for (String key : threads.getKeySet()) {
+					threads.getClientHandler(key).oos.writeObject(onlineUsersArray);
+					threads.getClientHandler(key).oos.flush();
 				}
 			} catch (IOException e) {
 			}
@@ -278,14 +277,14 @@ public class ServerController {
 			sui.setUIText(username + " has left the chat\n");
 			log.logServerMessage(username + " is disconnected");
 			
-			threadMap.remove(username);
+			threads.removeThread(username);
 			onlineUsersList.removeAll(onlineUsersList);
-			for (String key : threadMap.keySet()) {
+			for (String key : threads.getKeySet()) {
 				onlineUsersList.add(key);
 			}
 			for(Connect c : users){
 				boolean isOnline = false;
-				for(String key : threadMap.keySet()){
+				for(String key : threads.getKeySet()){
 					if(c.getUsername().contentEquals(key)){
 						isOnline = true;
 					}
