@@ -169,7 +169,7 @@ public class ServerController {
 
 					} else if (object instanceof String) {
 						clientID = (String) object;
-						for (Connect usrs : users) {
+						for (Connect usrs : users.getUsers()) {
 							if (!clientID.equals(usrs.getUsername())) {
 								Connect connect = new Connect(clientID);
 								users.addUser(connect);
